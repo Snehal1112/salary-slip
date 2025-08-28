@@ -1,0 +1,274 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light;
+  color: #0f1724;
+  background-color: #f6f9fc;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center; /* center app horizontally */
+  align-items: flex-start; /* keep content top-aligned vertically */
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--bg, #f6f9fc);
+  color: #0f1724;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.5em 1em;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  background-color: #1565c0;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.06s ease;
+}
+button:hover {
+  background-color: #0f4aa1;
+  transform: translateY(-1px);
+}
+button:active {
+  transform: translateY(0);
+}
+button:focus,
+button:focus-visible {
+  outline: 3px solid rgba(21,101,192,0.18);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+/* Print styles: hide controls and optimize layout for A4 */
+@media print {
+  body {
+    background: white;
+    color: #000;
+  }
+  button, input, textarea, .MuiIconButton-root, .MuiSelect-root, .MuiFormControl-root {
+    display: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-area {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 auto;
+    box-shadow: none !important;
+  }
+}
+
+  /* Print layout tweaks for salary slip content */
+  .salary-slip {
+    padding: 18px 18px 14px 18px;
+    font-size: 11.5pt;
+  color: #111;
+  background: var(--paper, #ffffff);
+  border: 1px solid #e6e6e6;
+  border-radius: 6px;
+  box-shadow: 0 6px 14px rgba(16, 40, 70, 0.06);
+    font-family: 'Inter', 'Roboto', system-ui, -apple-system, 'Segoe UI', Arial;
+    line-height: 1.3;
+  }
+  .salary-slip .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #eef2f5;
+    padding-bottom: 10px;
+  }
+  .salary-slip .header .company {
+    max-width: 65%;
+  }
+  .salary-slip .meta-box {
+    background: transparent;
+    padding: 6px 10px;
+    border-radius: 4px;
+  }
+  .salary-slip .meta-title {
+    color: #0f1724;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .salary-slip .meta-date {
+    color: #6b7280;
+    font-size: 0.85rem;
+  }
+  .salary-slip .header .meta {
+    text-align: right;
+  }
+  .salary-slip .header .meta .MuiTypography-subtitle1 {
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #0f1724;
+    font-size: 0.95rem;
+  }
+  .salary-slip table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .salary-slip td, .salary-slip th {
+    border: 1px solid #edf0f2;
+    padding: 6px 10px;
+    vertical-align: middle;
+  }
+  .salary-slip .info-table td.label {
+    width: 22%;
+    background: transparent;
+    color: #374151;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-right: none;
+  }
+  .salary-slip .info-table td.value {
+    width: 28%;
+    color: #111827;
+    border-left: none;
+  }
+  .salary-slip .info-table td.right {
+    text-align: right;
+  }
+  .salary-slip .info-table tr td {
+    border-top: 1px solid #eef2f6;
+  }
+  .salary-slip thead tr th {
+    background: #fafcfe;
+    color: #16325c;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .salary-slip .earnings-deductions tbody td {
+    padding: 8px 10px;
+  }
+  .salary-slip .earnings-deductions td {
+    color: #111827;
+  }
+  .salary-slip .totals {
+    margin-top: 10px;
+    font-weight: 600;
+  }
+
+  .salary-slip .signature {
+    margin-top: 18px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-end;
+  }
+  .salary-slip .signature .sig-box {
+    width: 40%;
+    text-align: left;
+    font-size: 11px;
+  }
+  .salary-slip .signature .sig-box .line {
+    height: 1px;
+    background: #cfcfcf;
+    margin-bottom: 8px;
+  }
+
+  .salary-slip .net-salary {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .salary-slip .net-salary .net-block {
+    text-align: right;
+    min-width: 140px;
+  }
+  .salary-slip .net-salary .net-label {
+    display: block;
+    color: #6b7280;
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+  }
+  .salary-slip .net-salary .net-amount {
+    display: inline-block;
+    background: #0f1724;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 1.2rem;
+  }
+
+  .salary-slip .total-row td {
+    background: #fbfdff;
+  }
+
+  .salary-slip .signature .label {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #666;
+  }
+
+  /* Ensure good A4 print margins and prevent breaks inside tables */
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  @media print {
+    .print-area {
+      box-shadow: none !important;
+      padding: 12mm !important;
+    background: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    }
+    .salary-slip .header, .salary-slip .totals {
+      page-break-inside: avoid;
+    }
+    .salary-slip table {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .salary-slip tr {
+      page-break-inside: avoid;
+    }
+    header.print-header, footer.print-footer {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 10pt;
+    }
+  }
