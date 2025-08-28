@@ -1,3 +1,14 @@
+export type IncomeItem = LineItem;
+export type DeductionItem = LineItem;
+
+export interface FormValues {
+  company: Company;
+  employee: Employee;
+  workingDays: WorkingDays;
+  income: IncomeItem[];
+  deductions: DeductionItem[];
+  template: TemplateSettings;
+}
 export type LineItem = {
   particular: string;
   amount: number;
@@ -5,9 +16,11 @@ export type LineItem = {
 
 export type Company = {
   name: string;
-  address: string;
+  address: string[];
   email: string;
   mobile: string;
+  gstin: string;
+  website: string;
 };
 
 export type Employee = {

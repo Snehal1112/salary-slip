@@ -22,9 +22,11 @@ const initialState: SalaryState = {
   current: {
     company: {
       name: "NUMERIC LABS",
-      address: "abc, street, anand - 388001",
+      address: ["abc, street, anand - 388001"],
       email: "@gmail.com",
       mobile: "9999999999",
+      gstin: "",
+      website: "",
     },
     employee: {
       name: "",
