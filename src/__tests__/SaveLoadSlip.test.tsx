@@ -139,7 +139,7 @@ test('save slip persists to store and can be previewed', async () => {
     const slips = store.getState().salary.slips;
     expect(slips.length).toBeGreaterThanOrEqual(1);
   }, { timeout: 1000 });
-  
+
   const saved = store.getState().salary.slips[store.getState().salary.slips.length - 1]
   expect(saved.employee.name).toBe('Test Employee')
 }, 10000)

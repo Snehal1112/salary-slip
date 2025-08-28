@@ -7,7 +7,14 @@ describe("salary slice", () => {
   beforeEach(() => {
     state = {
       current: {
-  company: { name: "X", address: [""], email: "", mobile: "", gstin: "", website: "" },
+        company: {
+          name: "X",
+          address: [""],
+          email: "",
+          mobile: "",
+          gstin: "",
+          website: "",
+        },
         employee: {
           name: "",
           code: "",

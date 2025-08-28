@@ -1,12 +1,13 @@
 import React from 'react';
 import { Box, Typography, Paper, TextField, IconButton, Button } from '@mui/material';
 // ...existing code...
-import type { UseFormReturn, FieldValues } from 'react-hook-form';
+import type { UseFormReturn } from 'react-hook-form';
+import type { FormValues } from '../features/salary/types';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 interface Props {
-  form: UseFormReturn<FieldValues>;
+  form: UseFormReturn<FormValues>;
 }
 
 const CompanyDetailsCard: React.FC<Props> = ({ form }) => {
@@ -36,10 +37,10 @@ const CompanyDetailsCard: React.FC<Props> = ({ form }) => {
         </Box>
       ))}
       <Button startIcon={<AddIcon />} onClick={handleAddAddress} size="small" variant="text" color="primary" sx={{ textTransform: 'none', fontWeight: 700, mb: 2 }}>Add Address Line</Button>
-  <TextField label="GSTIN" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.gstin')} />
-  <TextField label="Email" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.email')} />
-  <TextField label="Website" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.website')} />
-  <TextField label="Contact Number" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.mobile')} />
+      <TextField label="GSTIN" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.gstin')} />
+      <TextField label="Email" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.email')} />
+      <TextField label="Website" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.website')} />
+      <TextField label="Contact Number" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.mobile')} />
     </Paper>
   );
 };
