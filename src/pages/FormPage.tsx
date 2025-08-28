@@ -41,7 +41,7 @@ const schema = yup.object({
   deductions: yup.array().of(yup.object({ particular: yup.string().required(), amount: yup.number().min(0).required() })).required(),
   template: yup.object({
     titleText: yup.string().optional(),
-    titleAlign: yup.string().optional(),
+    titleAlign: yup.string().oneOf(['left', 'center', 'right']).optional(),
     showCompanyName: yup.boolean().optional(),
     showCompanyAddress: yup.boolean().optional(),
   }).required(),

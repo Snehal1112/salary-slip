@@ -1,13 +1,12 @@
 import React from 'react';
 import { Box, Typography, Paper, TextField, IconButton, Button } from '@mui/material';
 // ...existing code...
-import type { UseFormReturn } from 'react-hook-form';
-import type { FormValues } from '../features/salary/types';
+import type { UseFormReturn, FieldValues } from 'react-hook-form';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 interface Props {
-  form: UseFormReturn<FormValues>;
+  form: UseFormReturn<FieldValues>;
 }
 
 const CompanyDetailsCard: React.FC<Props> = ({ form }) => {

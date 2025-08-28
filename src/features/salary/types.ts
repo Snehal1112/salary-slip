@@ -17,21 +17,21 @@ export type LineItem = {
 export type Company = {
   name: string;
   address: string[];
-  email: string;
-  mobile: string;
-  gstin: string;
-  website: string;
+  email?: string;
+  mobile?: string;
+  gstin?: string;
+  website?: string;
 };
 
 export type Employee = {
   id?: string;
   name: string;
-  code: string;
-  designation: string;
-  pan: string;
-  bankAccount: string;
-  bankName: string;
-  chequeNumber: string;
+  code?: string;
+  designation?: string;
+  pan?: string;
+  bankAccount?: string;
+  bankName?: string;
+  chequeNumber?: string;
 };
 
 export type WorkingDays = {
