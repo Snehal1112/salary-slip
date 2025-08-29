@@ -159,15 +159,19 @@ const PreviewPage: React.FC = () => {
             </div>
           </Box>
 
-          <div className="signature">
-            <div className="sig-box">
-              <div className="line" />
-              <div className="label">Employee Signature</div>
+          <div className="signature" style={{ display: 'flex', justifyContent: 'space-between', gap: 32, marginTop: 32, padding: '24px 0' }}>
+            <div className="sig-box" style={{ flex: 1, textAlign: 'center', padding: '0 16px' }}>
+              <div className="line" style={{ borderBottom: '2px solid #bbb', margin: '0 auto 8px', width: '80%' }} />
+              <div className="label" style={{ fontWeight: 500, color: '#444', fontSize: 15, marginTop: 8 }}>Employee Signature</div>
             </div>
-            <div className="sig-box">
-              <div className="line" />
-              <div className="label">Authorised Signatory</div>
+            <div className="sig-box" style={{ flex: 1, textAlign: 'center', padding: '0 16px' }}>
+              <div className="line" style={{ borderBottom: '2px solid #bbb', margin: '0 auto 8px', width: '80%' }} />
+              <div className="label" style={{ fontWeight: 500, color: '#444', fontSize: 15, marginTop: 8 }}>Authorised Signatory</div>
             </div>
+          </div>
+
+          <div style={{ width: '100%', textAlign: 'center', marginTop: 32, padding: '12px 0', fontSize: 13, color: '#888' }}>
+            <strong>Disclaimer:</strong> This salary slip is system generated and does not require a physical signature. All information is confidential and intended solely for the recipient.
           </div>
         </div>
 
