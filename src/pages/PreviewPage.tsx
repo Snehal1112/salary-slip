@@ -22,8 +22,8 @@ const PreviewPage: React.FC = () => {
   return (
     <Container sx={{ py: 2 }}>
       <PageBreadcrumbs />
-      <Paper sx={{ p: 1 }} ref={ref} className="print-area">
-        <div className="salary-slip">
+      <Paper sx={{ p: 1 }} className="print-area">
+        <div className="salary-slip" ref={ref}>
           <div className="header">
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
               <div className="company">
@@ -61,63 +61,63 @@ const PreviewPage: React.FC = () => {
             </div>
           </div>
 
-          <Box sx={{ display: 'flex', gap: 2, mt: 1.5, flexWrap: 'wrap' }}>
-            <Box sx={{ flex: 1 }}>
-              <Table size="small" className="info-table">
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="label">Employee Name</TableCell>
-                    <TableCell className="value">{current.employee.name}</TableCell>
-                    <TableCell className="label right">Total Working Days</TableCell>
-                    <TableCell className="value right">{current.workingDays?.totalWorkingDays ?? '-'}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="label">Employee Code</TableCell>
-                    <TableCell className="value">{current.employee.code}</TableCell>
-                    <TableCell className="label right">Number of Working Days Attended</TableCell>
-                    <TableCell className="value right">{current.workingDays?.daysAttended ?? '-'}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="label">Designation</TableCell>
-                    <TableCell className="value">{current.employee.designation}</TableCell>
-                    <TableCell className="label right">Leaves</TableCell>
-                    <TableCell className="value right">{current.workingDays?.leavesTaken ? '' : ''}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="label">PAN</TableCell>
-                    <TableCell className="value">{current.employee.pan}</TableCell>
-                    <TableCell className="label right">Leaves Taken</TableCell>
-                    <TableCell className="value right">{current.workingDays?.leavesTaken ?? '0'}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="label">Bank Account Number</TableCell>
-                    <TableCell className="value">{current.employee.bankAccount}</TableCell>
-                    <TableCell className="label right">Balance Leaves</TableCell>
-                    <TableCell className="value right">{current.workingDays?.balanceLeaves ?? '0'}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="label">Bank Name</TableCell>
-                    <TableCell className="value">{current.employee.bankName}</TableCell>
-                    <TableCell className="label right">Cheque Number</TableCell>
-                    <TableCell className="value right">{current.employee.chequeNumber}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </Box>
-          </Box>
+          <div style={{ background: '#f8f8fa', border: '1px solid #e0e0e0', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.03)', padding: '32px 0', marginTop: 32 }}>
+            <Table size="small" className="info-table">
+              <TableBody>
+                <TableRow>
+                  <TableCell className="label" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>Employee Name</TableCell>
+                  <TableCell className="value" sx={{ textAlign: 'left', verticalAlign: 'middle', width: 180 }}>{current.employee.name}</TableCell>
+                  <TableCell className="label right" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>Total Working Days</TableCell>
+                  <TableCell className="value right" sx={{ textAlign: 'right', verticalAlign: 'middle', width: 100 }}>{current.workingDays?.totalWorkingDays ?? '-'}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="label" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>Employee Code</TableCell>
+                  <TableCell className="value" sx={{ textAlign: 'left', verticalAlign: 'middle', width: 180 }}>{current.employee.code}</TableCell>
+                  <TableCell className="label right" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>No of Working Days</TableCell>
+                  <TableCell className="value right" sx={{ textAlign: 'right', verticalAlign: 'middle', width: 100 }}>{current.workingDays?.daysAttended ?? '-'}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="label" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>Designation</TableCell>
+                  <TableCell className="value" sx={{ textAlign: 'left', verticalAlign: 'middle', width: 180 }}>{current.employee.designation}</TableCell>
+                  <TableCell className="label right" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>Leaves Taken</TableCell>
+                  <TableCell className="value right" sx={{ textAlign: 'right', verticalAlign: 'middle', width: 100 }}>{current.workingDays?.leavesTaken ?? '0'}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="label" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>PAN</TableCell>
+                  <TableCell className="value" sx={{ textAlign: 'left', verticalAlign: 'middle', width: 180 }}>{current.employee.pan}</TableCell>
+                  <TableCell className="label right" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>Balance Leaves</TableCell>
+                  <TableCell className="value right" sx={{ textAlign: 'right', verticalAlign: 'middle', width: 100 }}>{current.workingDays?.balanceLeaves ?? '0'}</TableCell>
+
+                </TableRow>
+                <TableRow>
+                  <TableCell className="label" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>Bank Account Number</TableCell>
+                  <TableCell className="value" sx={{ textAlign: 'left', verticalAlign: 'middle', width: 180 }}>{current.employee.bankAccount}</TableCell>
+                  <TableCell className="label right" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>Cheque Number</TableCell>
+                  <TableCell className="value right" sx={{ textAlign: 'right', verticalAlign: 'middle', width: 100 }}>{current.employee.chequeNumber}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="label" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>Bank Name</TableCell>
+                  <TableCell className="value" sx={{ textAlign: 'left', verticalAlign: 'middle', width: 180 }}>{current.employee.bankName}</TableCell>
+                  <TableCell className="label right" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}></TableCell>
+                  <TableCell className="value right" sx={{ textAlign: 'right', verticalAlign: 'middle', width: 100 }}></TableCell>
+
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
 
           <div style={{ background: '#f8f8fa', border: '1px solid #e0e0e0', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.03)', padding: '32px 0', marginTop: 32 }}>
             <Table size="small" className="earnings-deductions">
               <TableHead>
                 <TableRow>
-                  <TableCell colSpan={2} sx={{ fontWeight: 700 }}>Earnings</TableCell>
-                  <TableCell colSpan={2} sx={{ fontWeight: 700 }}>Deductions</TableCell>
+                  <TableCell align="center" colSpan={2} sx={{ fontWeight: 700 }}>Earnings</TableCell>
+                  <TableCell align="center" colSpan={2} sx={{ fontWeight: 700 }}>Deductions</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell>Particulars</TableCell>
-                  <TableCell align="right">Amount</TableCell>
-                  <TableCell>Particulars</TableCell>
-                  <TableCell align="right">Amount</TableCell>
+                  <TableCell align="center">Particulars</TableCell>
+                  <TableCell align="center">Amount</TableCell>
+                  <TableCell align="center">Particulars</TableCell>
+                  <TableCell align="center">Amount</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -175,7 +175,6 @@ const PreviewPage: React.FC = () => {
             <strong>Disclaimer:</strong> This salary slip is system generated and does not require a physical signature. All information is confidential and intended solely for the recipient.
           </div>
         </div>
-
         <Box sx={{ mt: 2, p: 2 }}>
           <Button variant="contained" onClick={async () => {
             if (!ref.current) return
