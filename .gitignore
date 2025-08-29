@@ -1,14 +1,47 @@
+# ==============================================================================
+# Node.js & Package Managers
+# ==============================================================================
+
 # Dependencies
 node_modules/
+
+# Package manager lock files (keep one, ignore others if using multiple)
+# yarn.lock
+# package-lock.json
+# pnpm-lock.yaml
+
+# ==============================================================================
+# Build & Distribution
+# ==============================================================================
 
 # Build outputs
 dist/
 dist-ssr/
 build/
+out/
+
+# Framework-specific builds
 .next/
 .nuxt/
-out/
+.vercel/
+.netlify/
+
+# Test coverage
 coverage/
+.nyc_output/
+
+# ==============================================================================
+# Development & Runtime
+# ==============================================================================
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local
 
 # Logs
 logs/
@@ -19,18 +52,103 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ==============================================================================
+# Cache & Temporary Files
+# ==============================================================================
+
 # Cache directories
 .cache/
 .parcel-cache/
 .eslintcache
+.stylelintcache
+
+# Temporary files
 tmp/
 temp/
+*.tmp
+*.swp
+*~
 
-# Local environment files
-*.local
+# ==============================================================================
+# IDE & Editor Files
+# ==============================================================================
 
-# IDE files
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Visual Studio
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# JetBrains IDEs (WebStorm, IntelliJ, etc.)
+.idea/
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# ==============================================================================
+# Operating System Files
+# ==============================================================================
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# ==============================================================================
+# Claude Code & AI Tools
+# ==============================================================================
+
+# Claude Code workspace files
+.claude/
+.kilocode/
+.ollama/
+
+# Other AI development tools
+.cursor/
+.copilot/
+
+# ==============================================================================
+# Project Specific
+# ==============================================================================
+
+# Add any project-specific ignore patterns here
+# e.g., generated documentation, vendor files, etc.

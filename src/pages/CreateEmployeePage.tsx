@@ -5,14 +5,24 @@ import { useNavigate } from 'react-router-dom'
 import EmployeeForm from '../features/employees/EmployeeForm'
 import { useAppDispatch } from '../store/hooks'
 import { addEmployee } from '../features/employees/employeesSlice'
-import type { Employee } from '../features/employees/types'
+import type { Employee, EmployeeRequired } from '../types/shared'
 
 const CreateEmployeePage: React.FC = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const handleSubmit = (data: Employee) => {
-    dispatch(addEmployee(data))
+    // Convert Employee to EmployeeRequired by providing defaults for required fields
+    const employeeData: EmployeeRequired = {
+      ...data,
+      code: data.code || '',
+      designation: data.designation || '',
+      pan: data.pan || '',
+      bankAccount: data.bankAccount || '',
+      bankName: data.bankName || '',
+      chequeNumber: data.chequeNumber || '',
+    }
+    dispatch(addEmployee(employeeData))
     navigate('/employees')
   }
 

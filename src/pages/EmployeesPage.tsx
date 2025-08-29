@@ -8,7 +8,7 @@ import { useAppSelector, useAppDispatch } from '../store/hooks'
 import { addEmployee, updateEmployee, deleteEmployee } from '../features/employees/employeesSlice'
 import { setEmployee } from '../features/salary/salarySlice'
 import { useNavigate } from 'react-router-dom'
-import type { Employee } from '../features/employees/types'
+import type { Employee, EmployeeRequired } from '../types/shared'
 import EmployeeForm from '../features/employees/EmployeeForm'
 
 // empty constant intentionally omitted - EmployeeForm provides defaults
@@ -21,20 +21,31 @@ const EmployeesPage: React.FC = () => {
   const navigate = useNavigate()
 
   const onSubmit = (data: Employee) => {
+    // Convert Employee to EmployeeRequired by providing defaults for required fields
+    const employeeData: EmployeeRequired = {
+      ...data,
+      code: data.code || '',
+      designation: data.designation || '',
+      pan: data.pan || '',
+      bankAccount: data.bankAccount || '',
+      bankName: data.bankName || '',
+      chequeNumber: data.chequeNumber || '',
+    }
+    
     if (editingId) {
-      dispatch(updateEmployee({ ...data, id: editingId }))
+      dispatch(updateEmployee({ ...employeeData, id: editingId }))
     } else {
-      dispatch(addEmployee(data))
+      dispatch(addEmployee(employeeData))
     }
     setEditingId(undefined)
   }
 
-  const onEdit = (e: Employee) => {
+  const onEdit = (e: EmployeeRequired) => {
     setEditingId(e.id)
     // prefill form by setting editingId and letting EmployeeForm receive initial via employees.find below
   }
 
-  const onUse = (e: Employee) => {
+  const onUse = (e: EmployeeRequired) => {
     // set current employee in store and navigate to form with employeeId query param
     dispatch(setEmployee(e))
     navigate(`/form?employeeId=${e.id}`)

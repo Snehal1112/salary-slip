@@ -11,7 +11,7 @@ import { useForm, Controller } from 'react-hook-form'
 import type { Resolver } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import type { Employee } from './types'
+import type { Employee } from '../../types/shared'
 
 
 const schema = yup.object({

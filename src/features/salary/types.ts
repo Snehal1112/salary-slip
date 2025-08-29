@@ -1,3 +1,6 @@
+// Employee type imported from shared location
+import type { Employee } from '../../types/shared';
+
 export type IncomeItem = LineItem;
 export type DeductionItem = LineItem;
 
@@ -23,16 +26,7 @@ export type Company = {
   website?: string;
 };
 
-export type Employee = {
-  id?: string;
-  name: string;
-  code?: string;
-  designation?: string;
-  pan?: string;
-  bankAccount?: string;
-  bankName?: string;
-  chequeNumber?: string;
-};
+// Employee type now imported from shared location above
 
 export type WorkingDays = {
   totalWorkingDays: number;
