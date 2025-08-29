@@ -106,7 +106,7 @@ const PreviewPage: React.FC = () => {
             </Box>
           </Box>
 
-          <Box sx={{ mt: 1.5 }}>
+          <div style={{ background: '#f8f8fa', border: '1px solid #e0e0e0', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.03)', padding: '32px 0', marginTop: 32 }}>
             <Table size="small" className="earnings-deductions">
               <TableHead>
                 <TableRow>
@@ -148,7 +148,7 @@ const PreviewPage: React.FC = () => {
                 </TableRow>
               </TableBody>
             </Table>
-          </Box>
+          </div>
 
           <Box sx={{ mt: 1.5 }} className="totals">
             <div className="net-salary">
@@ -159,14 +159,15 @@ const PreviewPage: React.FC = () => {
             </div>
           </Box>
 
-          <div className="signature" style={{ display: 'flex', justifyContent: 'space-between', gap: 32, marginTop: 32, padding: '24px 0' }}>
-            <div className="sig-box" style={{ flex: 1, textAlign: 'center', padding: '0 16px' }}>
-              <div className="line" style={{ borderBottom: '2px solid #bbb', margin: '0 auto 8px', width: '80%' }} />
-              <div className="label" style={{ fontWeight: 500, color: '#444', fontSize: 15, marginTop: 8 }}>Employee Signature</div>
+          <Box sx={{ mt: 4 }} />
+          <div className="signature" style={{ display: 'flex', justifyContent: 'center', gap: 48, marginTop: 64, padding: '64px 0 48px 0', background: '#f8f8fa', borderRadius: 12, border: '1px solid #e0e0e0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+            <div className="sig-box" style={{ flex: 1, textAlign: 'center', padding: '0 24px' }}>
+              <div className="line" style={{ borderBottom: '2px dashed #bbb', margin: '0 auto 24px', width: '70%' }} />
+              <div className="label" style={{ fontWeight: 600, color: '#333', fontSize: 16, marginTop: 12, letterSpacing: 0.5 }}>Employee Signature</div>
             </div>
-            <div className="sig-box" style={{ flex: 1, textAlign: 'center', padding: '0 16px' }}>
-              <div className="line" style={{ borderBottom: '2px solid #bbb', margin: '0 auto 8px', width: '80%' }} />
-              <div className="label" style={{ fontWeight: 500, color: '#444', fontSize: 15, marginTop: 8 }}>Authorised Signatory</div>
+            <div className="sig-box" style={{ flex: 1, textAlign: 'center', padding: '0 24px' }}>
+              <div className="line" style={{ borderBottom: '2px dashed #bbb', margin: '0 auto 24px', width: '70%' }} />
+              <div className="label" style={{ fontWeight: 600, color: '#333', fontSize: 16, marginTop: 12, letterSpacing: 0.5 }}>Authorised Signatory</div>
             </div>
           </div>
 
