@@ -28,10 +28,28 @@ const PreviewPage: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
               <div className="company">
                 {current.template?.showCompanyName !== false && (
-                  <Typography variant="h6" sx={{ fontWeight: 800 }} className="company-name">{current.company.name}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: 1, color: '#333', mb: 0.5, whiteSpace: 'nowrap' }} className="company-name">
+                    {typeof current.company.name === 'string'
+                      ? current.company.name.replace(/\s*\n\s*/g, ' ').replace(/\s{2,}/g, ' ').replace(/\n/g, ' ').trim()
+                      : current.company.name}
+                  </Typography>
                 )}
                 {current.template?.showCompanyAddress !== false && current.company.address && (
-                  <Typography variant="body2" sx={{ mt: 0.5 }} className="company-address">{current.company.address}</Typography>
+                  <Box sx={{ mt: 0.5, mb: 1 }}>
+                    {Array.isArray(current.company.address)
+                      ? current.company.address.map((line: string, idx: number) => (
+                        <Typography key={idx} variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}>
+                          {line}
+                        </Typography>
+                      ))
+                      : String(current.company.address)
+                        .split(/,|\n/)
+                        .map((line: string, idx: number) => (
+                          <Typography key={idx} variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}>
+                            {line.trim()}
+                          </Typography>
+                        ))}
+                  </Box>
                 )}
               </div>
             </div>
@@ -226,11 +244,11 @@ const PreviewPage: React.FC = () => {
               ...(esiEmployer ? [{ particular: 'Employer ESI (3.25%)', amount: esiEmployer }] : []),
             ]
             // append employer contributions as additional income rows labelled 'Employer Contribution' (display-only)
-            dispatch(setIncome([...income, ...employerContrib]))
-            dispatch(setWorkingDays({ totalWorkingDays: 30, daysAttended: 30, leavesTaken: 0, balanceLeaves: 12 }))
-            dispatch(setMonth('Aug-25'))
-            dispatch(recalc())
-            dispatch(saveSlip())
+            dispatch(setIncome([...income, ...employerContrib]));
+            dispatch(setWorkingDays({ totalWorkingDays: 30, daysAttended: 30, leavesTaken: 0, balanceLeaves: 12 }));
+            dispatch(setMonth('Aug-25'));
+            dispatch(recalc());
+            dispatch(saveSlip());
           }}>Load sample slip</Button>
         </Box>
       </Paper>
