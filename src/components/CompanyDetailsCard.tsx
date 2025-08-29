@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Typography, Paper, TextField, IconButton, Button } from '@mui/material';
-// ...existing code...
 import type { UseFormReturn } from 'react-hook-form';
 import type { FormValues } from '../features/salary/types';
 import AddIcon from '@mui/icons-material/Add';
@@ -11,16 +10,16 @@ interface Props {
 }
 
 const CompanyDetailsCard: React.FC<Props> = ({ form }) => {
-  const { register, setValue, getValues } = form;
-  const address: string[] = getValues('company.address') || [''];
+  const { register, setValue, watch } = form;
+  const address: string[] = watch('company.address') || [''];
 
   const handleAddAddress = () => {
-    setValue('company.address', [...address, '']);
+    setValue('company.address', [...address, ''], { shouldDirty: true, shouldTouch: true });
   };
 
   const handleRemoveAddress = (idx: number) => {
     if (address.length > 1) {
-      setValue('company.address', address.filter((_, i) => i !== idx));
+      setValue('company.address', address.filter((_, i) => i !== idx), { shouldDirty: true, shouldTouch: true });
     }
   };
 

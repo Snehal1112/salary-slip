@@ -7,7 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { saveSlip } from '../features/salary/salarySlice';
-import { setCompany } from '../features/salary/salarySlice';
+import { setCompany, setEmployee } from '../features/salary/salarySlice';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -90,6 +90,7 @@ const FormPage: React.FC = () => {
       website: formValues.company.website || '',
     };
     dispatch(setCompany(companyForRedux));
+    dispatch(setEmployee(formValues.employee)); // <-- FIX: update employee details before saving
     dispatch(saveSlip());
     if (process.env.NODE_ENV !== 'test') {
       navigate('/preview');
@@ -145,7 +146,7 @@ const FormPage: React.FC = () => {
                         <TextField fullWidth defaultValue={f.particular} {...register(`income.${i}.particular` as const)} size="small" />
                       </TableCell>
                       <TableCell align="right" sx={{ width: '20%' }}>
-                        <TextField type="number" defaultValue={f.amount} {...register(`income.${i}.amount` as const)} inputProps={{ min: 0 }} size="small" sx={{ width: 72 }} />
+                        <TextField type="number" defaultValue={f.amount} {...register(`income.${i}.amount` as const)} inputProps={{ min: 0 }} size="small" sx={{ width: 120 }} />
                       </TableCell>
                       <TableCell sx={{ width: '10%' }}>
                         <IconButton size="small" onClick={() => removeIncome(i)} aria-label="remove income"><DeleteIcon fontSize="small" /></IconButton>
@@ -179,7 +180,7 @@ const FormPage: React.FC = () => {
                         <TextField fullWidth defaultValue={f.particular} {...register(`deductions.${i}.particular` as const)} size="small" />
                       </TableCell>
                       <TableCell align="right">
-                        <TextField type="number" defaultValue={f.amount} {...register(`deductions.${i}.amount` as const)} inputProps={{ min: 0 }} size="small" sx={{ width: 72 }} />
+                        <TextField type="number" defaultValue={f.amount} {...register(`deductions.${i}.amount` as const)} inputProps={{ min: 0 }} size="small" sx={{ width: 120 }} />
                       </TableCell>
                       <TableCell>
                         <IconButton size="small" onClick={() => removeDed(i)} aria-label="remove deduction"><DeleteIcon fontSize="small" /></IconButton>

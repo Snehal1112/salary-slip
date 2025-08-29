@@ -3,7 +3,6 @@ import { Provider } from 'react-redux'
 import { store } from '../store'
 import FormPage from '../pages/FormPage'
 import { BrowserRouter } from 'react-router-dom'
-import { setCompany, setEmployee, setWorkingDays, setIncome, setDeductions, saveSlip } from '../features/salary/salarySlice'
 
 test('save slip persists to store and can be previewed', async () => {
   render(
@@ -26,36 +25,77 @@ test('save slip persists to store and can be previewed', async () => {
     fireEvent.change(addressLine1, { target: { value: '123 Main St' } })
   });
 
+  // Fill all company fields
+  const companyEmail = screen.getByLabelText(/Email/i)
+  await act(async () => {
+    fireEvent.change(companyEmail, { target: { value: 'test@email.com' } })
+  });
+  const companyMobile = screen.getByLabelText(/Contact Number/i)
+  await act(async () => {
+    fireEvent.change(companyMobile, { target: { value: '9999999999' } })
+  });
+  const companyGSTIN = screen.getByLabelText(/GSTIN/i)
+  await act(async () => {
+    fireEvent.change(companyGSTIN, { target: { value: 'GSTIN123' } })
+  });
+  const companyWebsite = screen.getByLabelText(/Website/i)
+  await act(async () => {
+    fireEvent.change(companyWebsite, { target: { value: 'https://test.com' } })
+  });
+
+  // Fill all employee fields
   const employeeName = screen.getByLabelText(/Employee Name/i)
   await act(async () => {
     fireEvent.change(employeeName, { target: { value: 'Test Employee' } })
   });
+  const employeeCode = screen.getByLabelText(/Employee Code/i)
+  await act(async () => {
+    fireEvent.change(employeeCode, { target: { value: 'E001' } })
+  });
+  const employeeDesignation = screen.getByLabelText(/Designation/i)
+  await act(async () => {
+    fireEvent.change(employeeDesignation, { target: { value: 'Developer' } })
+  });
+  // Fix ambiguous PAN label
+  const panInputs = screen.getAllByLabelText(/PAN/i)
+  const employeePAN = panInputs.find(inp => inp.getAttribute('name') === 'employee.pan')
+  await act(async () => {
+    fireEvent.change(employeePAN!, { target: { value: 'ABCDE1234F' } })
+  });
+  const employeeBankAccount = screen.getByLabelText(/Bank Account Number/i)
+  await act(async () => {
+    fireEvent.change(employeeBankAccount, { target: { value: '1234567890' } })
+  });
+  const employeeBankName = screen.getByLabelText(/Bank Name/i)
+  await act(async () => {
+    fireEvent.change(employeeBankName, { target: { value: 'Test Bank' } })
+  });
+  const employeeChequeNumber = screen.getByLabelText(/Cheque Number/i)
+  await act(async () => {
+    fireEvent.change(employeeChequeNumber, { target: { value: '987654' } })
+  });
 
+  // Fill working days
   const totalWorkingDays = screen.getByLabelText(/Total Working Days/i)
   await act(async () => {
     fireEvent.change(totalWorkingDays, { target: { value: '30' } })
   });
-
   const daysAttended = screen.getByLabelText(/Number of Working Days Attended/i)
   await act(async () => {
     fireEvent.change(daysAttended, { target: { value: '30' } })
   });
-
   const leavesTaken = screen.getByLabelText(/Leaves Taken/i)
   await act(async () => {
     fireEvent.change(leavesTaken, { target: { value: '0' } })
   });
-
   const balanceLeaves = screen.getByLabelText(/Balance Leaves/i)
   await act(async () => {
     fireEvent.change(balanceLeaves, { target: { value: '0' } })
   });
 
-  // Find all textboxes (inputs) and spinbuttons (number inputs)
+  // Fill all rendered income fields
   const textboxes = screen.getAllByRole('textbox');
   const spinbuttons = screen.getAllByRole('spinbutton');
-
-  // Fill all rendered income fields
   const incomeParticulars = textboxes.filter(inp => (inp as HTMLInputElement).name.match(/^income\.[0-9]+\.particular$/));
   const incomeAmounts = spinbuttons.filter(inp => (inp as HTMLInputElement).name.match(/^income\.[0-9]+\.amount$/));
   for (let i = 0; i < incomeParticulars.length; i++) {
@@ -86,53 +126,11 @@ test('save slip persists to store and can be previewed', async () => {
     }
   }
 
-  // Wait for state updates
+  // Click SAVE SLIP button
+  const saveBtn = screen.getByRole('button', { name: /SAVE SLIP/i })
   await act(async () => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-  });
-
-  // Update Redux store with form data before saving
-  await act(async () => {
-    store.dispatch(setCompany({
-      name: 'Test Company',
-      address: ['123 Main St'],
-      email: '',
-      mobile: '',
-      gstin: '',
-      website: ''
-    }));
-    store.dispatch(setEmployee({
-      name: 'Test Employee',
-      code: '',
-      designation: '',
-      pan: '',
-      bankAccount: '',
-      bankName: '',
-      chequeNumber: ''
-    }));
-    store.dispatch(setWorkingDays({
-      totalWorkingDays: 30,
-      daysAttended: 30,
-      leavesTaken: 0,
-      balanceLeaves: 0
-    }));
-    // Set income and deductions with test data
-    const incomeData = Array.from({ length: incomeParticulars.length }, (_, i) => ({
-      particular: `Income${i + 1}`,
-      amount: 1000 + i * 100
-    }));
-    const deductionData = Array.from({ length: deductionParticulars.length }, (_, i) => ({
-      particular: `Deduction${i + 1}`,
-      amount: 100 + i * 10
-    }));
-    store.dispatch(setIncome(incomeData));
-    store.dispatch(setDeductions(deductionData));
-  });
-
-  // Save slip directly using Redux action
-  await act(async () => {
-    store.dispatch(saveSlip());
-  });
+    fireEvent.click(saveBtn)
+  })
 
   // Wait for slip to be saved to Redux store
   await waitFor(() => {
