@@ -90,7 +90,8 @@ const FormPage: React.FC = () => {
       website: formValues.company.website || '',
     };
     dispatch(setCompany(companyForRedux));
-    dispatch(setEmployee(formValues.employee)); // <-- FIX: update employee details before saving
+    dispatch(setEmployee(formValues.employee));
+    dispatch({ type: 'salary/setWorkingDays', payload: formValues.workingDays }); // <-- ensure workingDays is updated
     dispatch(saveSlip());
     if (process.env.NODE_ENV !== 'test') {
       navigate('/preview');
