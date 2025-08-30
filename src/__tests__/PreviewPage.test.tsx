@@ -47,7 +47,25 @@ const createMockStore = (salaryState: Partial<SalaryState>) => {
       salary: salarySlice,
     },
     preloadedState: {
-      employees: { list: [] },
+      employees: {
+        list: [],
+        loading: false,
+        error: null,
+        selectedIds: [],
+        currentPage: 1,
+        itemsPerPage: 10,
+        totalItems: 0,
+        filters: { search: '', department: '', designation: '', status: 'all' as const },
+        sortBy: 'name' as const,
+        sortOrder: 'asc' as const,
+        viewMode: 'list' as const,
+        isFormOpen: false,
+        editingEmployeeId: null,
+        formStep: 0,
+        validationErrors: {},
+        bulkOperationInProgress: false,
+        stats: { totalEmployees: 0, activeEmployees: 0, departmentCounts: {}, recentlyAdded: 0 }
+      },
       salary: {
         current: {
           company: {
