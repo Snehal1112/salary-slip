@@ -1,5 +1,5 @@
 // Employee type imported from shared location
-import type { Employee } from '../../types/shared';
+import type { Employee } from "../../types/shared";
 
 export type IncomeItem = LineItem;
 export type DeductionItem = LineItem;
@@ -24,6 +24,7 @@ export type Company = {
   mobile?: string;
   gstin?: string;
   website?: string;
+  contactNumber?: string;
 };
 
 // Employee type now imported from shared location above

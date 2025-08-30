@@ -51,17 +51,24 @@ const PreviewPage: React.FC = () => {
                         ))}
                   </Box>
                 )}
-              </div>
-            </div>
-            <div className="meta" style={{ textAlign: current.template?.titleAlign ?? 'right' }}>
-              <div className="meta-box">
-                <Typography variant="subtitle1" sx={{ fontWeight: 800 }} className="meta-title">{current.template?.titleText ?? 'PAYSLIP'}</Typography>
-                <Typography variant="body2" className="meta-date">{current.month}</Typography>
+                {/* Add GSTIN, Email, Website, Contact Number below address */}
+                {current.company.gstin && (
+                  <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}><strong>GSTIN:</strong> {current.company.gstin}</Typography>
+                )}
+                {current.company.email && (
+                  <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}><strong>Email:</strong> {current.company.email}</Typography>
+                )}
+                {current.company.website && (
+                  <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}><strong>Website:</strong> {current.company.website}</Typography>
+                )}
+                {current.company.contactNumber && (
+                  <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}><strong>Contact Number:</strong> {current.company.contactNumber}</Typography>
+                )}
               </div>
             </div>
           </div>
 
-          <div style={{ background: '#f8f8fa', border: '1px solid #e0e0e0', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.03)', padding: '32px 0', marginTop: 32 }}>
+          <div className="employee-info" style={{ marginTop: 32 }}>
             <Table size="small" className="info-table">
               <TableBody>
                 <TableRow>
@@ -87,7 +94,6 @@ const PreviewPage: React.FC = () => {
                   <TableCell className="value" sx={{ textAlign: 'left', verticalAlign: 'middle', width: 180 }}>{current.employee.pan}</TableCell>
                   <TableCell className="label right" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>Balance Leaves</TableCell>
                   <TableCell className="value right" sx={{ textAlign: 'right', verticalAlign: 'middle', width: 100 }}>{current.workingDays?.balanceLeaves ?? '0'}</TableCell>
-
                 </TableRow>
                 <TableRow>
                   <TableCell className="label" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}>Bank Account Number</TableCell>
@@ -100,7 +106,6 @@ const PreviewPage: React.FC = () => {
                   <TableCell className="value" sx={{ textAlign: 'left', verticalAlign: 'middle', width: 180 }}>{current.employee.bankName}</TableCell>
                   <TableCell className="label right" sx={{ fontWeight: 700, textAlign: 'left', verticalAlign: 'middle', width: 220, whiteSpace: 'nowrap' }}></TableCell>
                   <TableCell className="value right" sx={{ textAlign: 'right', verticalAlign: 'middle', width: 100 }}></TableCell>
-
                 </TableRow>
               </TableBody>
             </Table>

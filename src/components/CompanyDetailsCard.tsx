@@ -24,7 +24,7 @@ const CompanyDetailsCard: React.FC<Props> = ({ form }) => {
   };
 
   return (
-    <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+    <Paper variant="outlined" sx={{ p: 2, borderRadius: 1 }}>
       <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>Company Details</Typography>
       <TextField label="Company Name" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.name')} />
       {address.map((line, idx) => (

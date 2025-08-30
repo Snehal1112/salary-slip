@@ -49,7 +49,7 @@ const schema = yup.object({
 
 const FormPage: React.FC = () => {
   const currentRaw = useAppSelector((s) => s.salary.current);
-  const current: FormValues = {
+  const current: FormValues = React.useMemo(() => ({
     ...currentRaw,
     company: {
       ...currentRaw.company,
@@ -58,15 +58,17 @@ const FormPage: React.FC = () => {
         : currentRaw.company?.address
           ? [currentRaw.company.address]
           : [''],
+      website: typeof currentRaw.company.website === 'string' ? currentRaw.company.website : '',
     },
     template: currentRaw.template || {},
-  };
+  }), [currentRaw]);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const form = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: current,
+    values: current,
   });
   const { register, handleSubmit, control, getValues } = form;
 
@@ -87,7 +89,7 @@ const FormPage: React.FC = () => {
       mobile: formValues.company.mobile || '',
       gstin: formValues.company.gstin || '',
       email: formValues.company.email || '',
-      website: formValues.company.website || '',
+      website: typeof formValues.company.website === 'string' ? formValues.company.website : '',
     };
     dispatch(setCompany(companyForRedux));
     dispatch(setEmployee(formValues.employee));
@@ -108,7 +110,7 @@ const FormPage: React.FC = () => {
             <CompanyDetailsCard form={form} />
           </Box>
           <Box sx={{ flex: '1 1 0' }}>
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+            <Paper variant="outlined" sx={{ p: 2, borderRadius: 1 }}>
               <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>Employee Details</Typography>
               <TextField label="Employee Name" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('employee.name')} />
               <TextField label="Employee Code" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('employee.code')} />
