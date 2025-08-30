@@ -49,26 +49,50 @@ const schema = yup.object({
 
 const FormPage: React.FC = () => {
   const currentRaw = useAppSelector((s) => s.salary.current);
-  const current: FormValues = React.useMemo(() => ({
-    ...currentRaw,
+  const defaultValues: FormValues = {
     company: {
-      ...currentRaw.company,
+      name: currentRaw.company?.name || '',
       address: Array.isArray(currentRaw.company?.address)
-        ? currentRaw.company.address
+        ? [...currentRaw.company.address]
         : currentRaw.company?.address
           ? [currentRaw.company.address]
           : [''],
-      website: typeof currentRaw.company.website === 'string' ? currentRaw.company.website : '',
+      mobile: currentRaw.company?.mobile || '',
+      gstin: currentRaw.company?.gstin || '',
+      email: currentRaw.company?.email || '',
+      website: typeof currentRaw.company?.website === 'string' ? currentRaw.company.website : '',
+      contactNumber: currentRaw.company?.contactNumber || '',
     },
-    template: currentRaw.template || {},
-  }), [currentRaw]);
+    employee: {
+      name: currentRaw.employee?.name || '',
+      code: currentRaw.employee?.code || '',
+      designation: currentRaw.employee?.designation || '',
+      pan: currentRaw.employee?.pan || '',
+      bankAccount: currentRaw.employee?.bankAccount || '',
+      bankName: currentRaw.employee?.bankName || '',
+      chequeNumber: currentRaw.employee?.chequeNumber || '',
+    },
+    workingDays: {
+      totalWorkingDays: currentRaw.workingDays?.totalWorkingDays ?? 0,
+      daysAttended: currentRaw.workingDays?.daysAttended ?? 0,
+      leavesTaken: currentRaw.workingDays?.leavesTaken ?? 0,
+      balanceLeaves: currentRaw.workingDays?.balanceLeaves ?? 0,
+    },
+    income: Array.isArray(currentRaw.income) ? [...currentRaw.income] : [],
+    deductions: Array.isArray(currentRaw.deductions) ? [...currentRaw.deductions] : [],
+    template: {
+      titleText: currentRaw.template?.titleText || '',
+      titleAlign: currentRaw.template?.titleAlign || 'right',
+      showCompanyName: currentRaw.template?.showCompanyName ?? true,
+      showCompanyAddress: currentRaw.template?.showCompanyAddress ?? true,
+    },
+  };
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const form = useForm<FormValues>({
     resolver: yupResolver(schema),
-    defaultValues: current,
-    values: current,
+    defaultValues,
   });
   const { register, handleSubmit, control, getValues } = form;
 
