@@ -136,6 +136,30 @@ test('save slip persists to store and can be previewed', async () => {
   await waitFor(() => {
     const slips = store.getState().salary.slips;
     expect(slips.length).toBeGreaterThanOrEqual(1);
+    // Check all company fields
+    const saved = slips[slips.length - 1];
+    expect(saved.company.name).toBe('Test Company');
+    expect(saved.company.address[0]).toBe('123 Main St');
+    expect(saved.company.email).toBe('test@email.com');
+    expect(saved.company.mobile).toBe('9999999999');
+    expect(saved.company.gstin).toBe('GSTIN123');
+    expect(saved.company.website).toBe('https://test.com');
+    // Check all employee fields
+    expect(saved.employee.name).toBe('Test Employee');
+    expect(saved.employee.code).toBe('E001');
+    expect(saved.employee.designation).toBe('Developer');
+    expect(saved.employee.pan).toBe('ABCDE1234F');
+    expect(saved.employee.bankAccount).toBe('1234567890');
+    expect(saved.employee.bankName).toBe('Test Bank');
+    expect(saved.employee.chequeNumber).toBe('987654');
+    // Check working days
+    expect(saved.workingDays.totalWorkingDays).toBe(30);
+    expect(saved.workingDays.daysAttended).toBe(30);
+    expect(saved.workingDays.leavesTaken).toBe(0);
+    expect(saved.workingDays.balanceLeaves).toBe(0);
+    // Check income and deductions
+    expect(saved.income.length).toBeGreaterThan(0);
+    expect(saved.deductions.length).toBeGreaterThan(0);
   }, { timeout: 1000 });
 
   const saved = store.getState().salary.slips[store.getState().salary.slips.length - 1]
