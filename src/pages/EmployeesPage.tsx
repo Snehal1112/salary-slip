@@ -1,21 +1,21 @@
 import React, { useState, useMemo } from 'react'
-import { 
-  Container, 
-  Typography, 
-  Button, 
-  Table, 
-  TableHead, 
-  TableRow, 
-  TableCell, 
-  TableBody, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions, 
-  TableContainer, 
-  IconButton, 
-  Tooltip, 
-  Stack, 
+import {
+  Container,
+  Typography,
+  Button,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TableContainer,
+  IconButton,
+  Tooltip,
+  Stack,
   Paper,
   Box,
   TextField,
@@ -35,13 +35,14 @@ import {
   Delete as DeleteIcon,
   Search as SearchIcon,
   People as PeopleIcon,
-  FilterList as FilterListIcon
+  FilterList as FilterListIcon,
+  PersonAdd as PersonAddIcon
 } from '@mui/icons-material'
 import PageBreadcrumbs from '../components/PageBreadcrumbs'
 import { useAppSelector, useAppDispatch } from '../store/hooks'
-import { 
-  addEmployee, 
-  updateEmployee, 
+import {
+  addEmployee,
+  updateEmployee,
   deleteEmployee,
   setFilters,
   clearFilters,
@@ -61,7 +62,7 @@ import EmployeeForm from '../features/employees/EmployeeForm'
 const EmployeesPage: React.FC = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  
+
   // Use enhanced selectors
   const employees = useAppSelector(selectFilteredEmployees)
   const filters = useAppSelector(selectEmployeeFilters)
@@ -70,13 +71,14 @@ const EmployeesPage: React.FC = () => {
   const loading = useAppSelector(selectEmployeesLoading)
   const error = useAppSelector(selectEmployeesError)
   const stats = useAppSelector(selectEmployeeStats)
-  
+
   const [editingId, setEditingId] = useState<string | undefined>(undefined)
+  const [showAddForm, setShowAddForm] = useState<boolean>(false)
   const [confirmDelete, setConfirmDelete] = useState<{ open: boolean; id?: string }>({ open: false })
-  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ 
-    open: false, 
-    message: '', 
-    severity: 'success' 
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+    open: false,
+    message: '',
+    severity: 'success'
   })
 
   const handleSearchChange = (value: string) => {
@@ -91,8 +93,19 @@ const EmployeesPage: React.FC = () => {
     dispatch(clearFilters())
   }
 
+  const handleAddEmployee = () => {
+    setEditingId(undefined)
+    setShowAddForm(true)
+  }
+
+  const handleCancelForm = () => {
+    setEditingId(undefined)
+    setShowAddForm(false)
+  }
+
   const onSubmit = (data: Employee) => {
     try {
+      console.log("submit button called");
       // Convert Employee to EmployeeRequired by providing defaults for required fields
       const employeeData: EmployeeRequired = {
         ...data,
@@ -103,13 +116,14 @@ const EmployeesPage: React.FC = () => {
         bankName: data.bankName || '',
         chequeNumber: data.chequeNumber || '',
       }
-      
+
       if (editingId) {
         dispatch(updateEmployee({ ...employeeData, id: editingId }))
         setSnackbar({ open: true, message: 'Employee updated successfully', severity: 'success' })
       } else {
         dispatch(addEmployee(employeeData))
         setSnackbar({ open: true, message: 'Employee added successfully', severity: 'success' })
+        setShowAddForm(false) // Hide form after successful addition
       }
       setEditingId(undefined)
     } catch {
@@ -119,6 +133,7 @@ const EmployeesPage: React.FC = () => {
 
   const onEdit = (e: EmployeeRequired) => {
     setEditingId(e.id)
+    setShowAddForm(true) // Show form when editing
   }
 
   const onUse = (e: EmployeeRequired) => {
@@ -127,7 +142,7 @@ const EmployeesPage: React.FC = () => {
   }
 
   const confirmRemove = (id?: string) => setConfirmDelete({ open: true, id })
-  
+
   const handleDelete = () => {
     if (confirmDelete.id) {
       dispatch(deleteEmployee(confirmDelete.id))
@@ -136,8 +151,8 @@ const EmployeesPage: React.FC = () => {
     setConfirmDelete({ open: false })
   }
 
-  const initialEmployee = useMemo(() => 
-    editingId ? employees.find(e => e.id === editingId) : undefined, 
+  const initialEmployee = useMemo(() =>
+    editingId ? employees.find(e => e.id === editingId) : undefined,
     [editingId, employees]
   )
 
@@ -146,19 +161,36 @@ const EmployeesPage: React.FC = () => {
   return (
     <Container sx={{ py: 3 }}>
       <PageBreadcrumbs muted size="small" />
-      
+
       {/* Header with Stats */}
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
             Employee Management
           </Typography>
-          <Chip 
-            icon={<PeopleIcon />}
-            label={`${stats.totalEmployees} Total`}
-            color="primary"
-            variant="outlined"
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Chip
+              icon={<PeopleIcon />}
+              label={`${stats.totalEmployees} Total`}
+              color="primary"
+              variant="outlined"
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<PersonAddIcon />}
+              onClick={handleAddEmployee}
+              sx={{
+                fontWeight: 600,
+                textTransform: 'none',
+                px: 3,
+                py: 1,
+                borderRadius: 2
+              }}
+            >
+              Add Employee
+            </Button>
+          </Box>
         </Box>
 
         {/* Quick Stats */}
@@ -186,7 +218,7 @@ const EmployeesPage: React.FC = () => {
             }}
             sx={{ flex: 1 }}
           />
-          
+
           <FormControl sx={{ minWidth: 150 }}>
             <InputLabel>Department</InputLabel>
             <Select
@@ -202,7 +234,7 @@ const EmployeesPage: React.FC = () => {
               ))}
             </Select>
           </FormControl>
-          
+
           <FormControl sx={{ minWidth: 150 }}>
             <InputLabel>Designation</InputLabel>
             <Select
@@ -218,7 +250,7 @@ const EmployeesPage: React.FC = () => {
               ))}
             </Select>
           </FormControl>
-          
+
           <Button
             variant="outlined"
             startIcon={<FilterListIcon />}
@@ -238,14 +270,19 @@ const EmployeesPage: React.FC = () => {
         </Alert>
       )}
 
-      {/* Employee Form */}
-      <EmployeeForm 
-        wizard={false} 
-        initial={initialEmployee} 
-        onSubmit={onSubmit} 
-        onCancel={() => setEditingId(undefined)} 
-        submitLabel={editingId ? 'Update Employee' : 'Add Employee'} 
-      />
+      {/* Employee Form - Only show when adding or editing */}
+      {(showAddForm || editingId) && (
+        <Box sx={{ mb: 3 }}>
+          <EmployeeForm
+            wizard={false}
+            initial={initialEmployee}
+            onSubmit={onSubmit}
+            onCancel={handleCancelForm}
+            submitLabel={editingId ? 'Update Employee' : 'Add Employee'}
+            showHeader={true}
+          />
+        </Box>
+      )}
 
       {/* Employee List */}
       <Paper sx={{ mt: 3 }}>
@@ -254,7 +291,7 @@ const EmployeesPage: React.FC = () => {
             Employees ({employees.length})
           </Typography>
         </Box>
-        
+
         <TableContainer>
           {employees.length === 0 ? (
             <Box sx={{ p: 4, textAlign: 'center' }}>
@@ -263,14 +300,24 @@ const EmployeesPage: React.FC = () => {
                 {hasFilters ? 'No employees match your filters' : 'No employees added yet'}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                {hasFilters 
+                {hasFilters
                   ? 'Try adjusting your search terms or filters.'
-                  : 'Get started by adding your first employee using the form above.'
+                  : 'Get started by adding your first employee.'
                 }
               </Typography>
-              {hasFilters && (
+              {hasFilters ? (
                 <Button variant="outlined" onClick={handleClearFilters}>
                   Clear Filters
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<PersonAddIcon />}
+                  onClick={handleAddEmployee}
+                  sx={{ fontWeight: 600 }}
+                >
+                  Add Your First Employee
                 </Button>
               )}
             </Box>
@@ -288,12 +335,12 @@ const EmployeesPage: React.FC = () => {
               </TableHead>
               <TableBody>
                 {employees.map((e) => (
-                  <TableRow 
-                    key={e.id} 
-                    hover 
-                    sx={{ 
-                      '&:nth-of-type(odd)': { bgcolor: 'action.selected' }, 
-                      '&:last-child td, &:last-child th': { border: 0 } 
+                  <TableRow
+                    key={e.id}
+                    hover
+                    sx={{
+                      '&:nth-of-type(odd)': { bgcolor: 'action.selected' },
+                      '&:last-child td, &:last-child th': { border: 0 }
                     }}
                   >
                     <TableCell sx={{ fontWeight: 500 }}>{e.name}</TableCell>

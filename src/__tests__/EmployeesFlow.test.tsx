@@ -54,15 +54,98 @@ describe('EmployeesFlow', () => {
     });
   });
 
+  test('ADD Employee button shows and hides form correctly', async () => {
+    renderWithProviders(<EmployeesPage />);
+
+    // Initially, form should be hidden
+    expect(screen.queryByLabelText(/Employee Name/i)).not.toBeInTheDocument();
+    
+    // Find and click ADD Employee button
+    const addEmployeeButton = screen.getByRole('button', { name: /Add Employee/i });
+    expect(addEmployeeButton).toBeInTheDocument();
+    fireEvent.click(addEmployeeButton);
+    
+    // Form should now be visible
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Employee Name/i)).toBeInTheDocument();
+    });
+    
+    // Cancel should hide form
+    const cancelButton = screen.getByRole('button', { name: /Cancel/i });
+    fireEvent.click(cancelButton);
+    
+    await waitFor(() => {
+      expect(screen.queryByLabelText(/Employee Name/i)).not.toBeInTheDocument();
+    });
+  });
+
+  test('empty state shows Add Your First Employee button', async () => {
+    renderWithProviders(<EmployeesPage />);
+
+    // Should show empty state message
+    expect(screen.getByText(/No employees added yet/i)).toBeInTheDocument();
+    
+    // Should show "Add Your First Employee" button
+    const firstEmployeeButton = screen.getByRole('button', { name: /Add Your First Employee/i });
+    expect(firstEmployeeButton).toBeInTheDocument();
+    
+    // Clicking should show form
+    fireEvent.click(firstEmployeeButton);
+    
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Employee Name/i)).toBeInTheDocument();
+    });
+  });
+
+  test('form hides after successful employee addition', async () => {
+    const { store } = renderWithProviders(<EmployeesPage />);
+
+    // Show form
+    const addEmployeeButton = screen.getByRole('button', { name: /Add Employee/i });
+    fireEvent.click(addEmployeeButton);
+    
+    // Fill form and submit
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Employee Name/i)).toBeInTheDocument();
+    });
+    
+    const nameInput = screen.getByLabelText(/Employee Name/i);
+    fireEvent.change(nameInput, { target: { value: 'Test Employee' } });
+    
+    const addButtons = screen.getAllByRole('button', { name: /Add Employee/i });
+    const submitButton = addButtons.find((button) => (button as HTMLButtonElement).type === 'submit')!;
+    fireEvent.click(submitButton);
+    
+    // Form should be hidden after successful submission
+    await waitFor(() => {
+      expect(screen.queryByLabelText(/Employee Name/i)).not.toBeInTheDocument();
+    });
+    
+    // Employee should be added to store
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.employees.list.length).toBe(1);
+    });
+  });
+
   test('selecting Use on employee updates Redux state and navigates correctly', async () => {
     const { store } = renderWithProviders(<EmployeesPage />);
 
+    // Show form first
+    const addEmployeeButton = screen.getByRole('button', { name: /Add Employee/i });
+    fireEvent.click(addEmployeeButton);
+
     // Add an employee
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Employee Name/i)).toBeInTheDocument();
+    });
+    
     const nameInput = screen.getByLabelText(/Employee Name/i);
     fireEvent.change(nameInput, { target: { value: 'Alice Johnson' } });
     
-    const addButton = screen.getByRole('button', { name: /Add/i });
-    fireEvent.click(addButton);
+    const addButtons = screen.getAllByRole('button', { name: /Add Employee/i });
+    const submitButton = addButtons.find((button) => (button as HTMLButtonElement).type === 'submit')!;
+    fireEvent.click(submitButton);
 
     // Wait for employee to be added to store first
     await waitFor(() => {
@@ -91,7 +174,15 @@ describe('EmployeesFlow', () => {
     expect(store.getState().employees.list.length).toBe(0);
     expect(screen.queryByRole('button', { name: /Use/i })).not.toBeInTheDocument();
 
+    // Show form first
+    const addEmployeeButton = screen.getByRole('button', { name: /Add Employee/i });
+    fireEvent.click(addEmployeeButton);
+
     // Add an employee with multiple fields
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Employee Name/i)).toBeInTheDocument();
+    });
+    
     const nameInput = screen.getByLabelText(/Employee Name/i);
     const codeInput = screen.getByLabelText(/Code/i);
     const designationInput = screen.getByLabelText(/Designation/i);
@@ -100,8 +191,9 @@ describe('EmployeesFlow', () => {
     fireEvent.change(codeInput, { target: { value: 'EMP002' } });
     fireEvent.change(designationInput, { target: { value: 'Developer' } });
     
-    const addButton = screen.getByRole('button', { name: /Add/i });
-    fireEvent.click(addButton);
+    const addButtons = screen.getAllByRole('button', { name: /Add Employee/i });
+    const submitButton = addButtons.find((button) => (button as HTMLButtonElement).type === 'submit')!;
+    fireEvent.click(submitButton);
 
     // Verify employee was added to Redux store
     await waitFor(() => {
@@ -123,12 +215,21 @@ describe('EmployeesFlow', () => {
   test('employee form handles minimum required data correctly', async () => {
     const { store } = renderWithProviders(<EmployeesPage />);
 
+    // Show form first
+    const addEmployeeButton = screen.getByRole('button', { name: /Add Employee/i });
+    fireEvent.click(addEmployeeButton);
+
     // Add employee with just required name field
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Employee Name/i)).toBeInTheDocument();
+    });
+    
     const nameInput = screen.getByLabelText(/Employee Name/i);
     fireEvent.change(nameInput, { target: { value: 'Jane Doe' } });
     
-    const addButton = screen.getByRole('button', { name: /Add/i });
-    fireEvent.click(addButton);
+    const addButtons = screen.getAllByRole('button', { name: /Add Employee/i });
+    const submitButton = addButtons.find((button) => (button as HTMLButtonElement).type === 'submit')!;
+    fireEvent.click(submitButton);
 
     // Verify employee was added with name and optional fields as undefined/empty
     await waitFor(() => {
@@ -152,7 +253,15 @@ describe('EmployeesFlow', () => {
   test('employee list displays added employees correctly', async () => {
     const { store } = renderWithProviders(<EmployeesPage />);
 
+    // Show form first
+    const addEmployeeButton = screen.getByRole('button', { name: /Add Employee/i });
+    fireEvent.click(addEmployeeButton);
+
     // Add multiple employees
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Employee Name/i)).toBeInTheDocument();
+    });
+    
     const nameInput = screen.getByLabelText(/Employee Name/i);
     const codeInput = screen.getByLabelText(/Code/i);
     
@@ -160,8 +269,9 @@ describe('EmployeesFlow', () => {
     fireEvent.change(nameInput, { target: { value: 'Employee One' } });
     fireEvent.change(codeInput, { target: { value: 'EMP001' } });
     
-    const addButton = screen.getByRole('button', { name: /Add/i });
-    fireEvent.click(addButton);
+    const addButtons = screen.getAllByRole('button', { name: /Add Employee/i });
+    const submitButton = addButtons.find((button) => (button as HTMLButtonElement).type === 'submit')!;
+    fireEvent.click(submitButton);
 
     // Verify first employee was added
     await waitFor(() => {
@@ -169,10 +279,24 @@ describe('EmployeesFlow', () => {
       expect(screen.getByText('Employee One')).toBeInTheDocument();
     }, { timeout: 3000 });
 
+    // Show form again for second employee 
+    const addEmployeeButton2 = screen.getByRole('button', { name: /Add Employee/i });
+    fireEvent.click(addEmployeeButton2);
+    
+    // Wait for form to show again
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Employee Name/i)).toBeInTheDocument();
+    });
+    
     // Clear form and add second employee
-    fireEvent.change(nameInput, { target: { value: 'Employee Two' } });
-    fireEvent.change(codeInput, { target: { value: 'EMP002' } });
-    fireEvent.click(addButton);
+    const nameInput2 = screen.getByLabelText(/Employee Name/i);
+    const codeInput2 = screen.getByLabelText(/Code/i);
+    fireEvent.change(nameInput2, { target: { value: 'Employee Two' } });
+    fireEvent.change(codeInput2, { target: { value: 'EMP002' } });
+    
+    const addButtons2 = screen.getAllByRole('button', { name: /Add Employee/i });
+    const submitButton2 = addButtons2.find((button) => (button as HTMLButtonElement).type === 'submit')!;
+    fireEvent.click(submitButton2);
 
     // Verify both employees are in state and UI
     await waitFor(() => {

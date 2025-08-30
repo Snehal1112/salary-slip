@@ -89,16 +89,16 @@ const StepIcon = React.memo(({ active, completed }: StepIconProps) => {
 
 StepIcon.displayName = 'StepIcon';
 
-const EmployeeForm = React.memo(({ 
-  initial, 
-  onSubmit, 
-  onCancel, 
-  submitLabel = 'Submit', 
-  wizard = false, 
-  showHeader = true 
+const EmployeeForm = React.memo(({
+  initial,
+  onSubmit,
+  onCancel,
+  submitLabel = 'Submit',
+  wizard = false,
+  showHeader = true
 }: Props) => {
   const [step, setStep] = React.useState(0);
-  
+
   const draftKey = React.useMemo(() => `employee:draft:${(initial as Employee)?.id ?? 'new'}`, [initial]);
 
   // Create proper default values to prevent uncontrolled input warnings
@@ -150,6 +150,8 @@ const EmployeeForm = React.memo(({
 
   const doSubmit = React.useCallback((formData: Employee) => {
     // Clear draft on submit
+    console.log('🚀 EmployeeForm doSubmit called with data:', formData);
+    logger.debug('EmployeeForm', "doSubmit function called");
     removeItem(draftKey);
     onSubmit(formData);
   }, [onSubmit, draftKey]);
@@ -183,9 +185,12 @@ const EmployeeForm = React.memo(({
           </Step>
         </Stepper>
 
-        <Box component="form" onSubmit={handleSubmit(doSubmit)}>
+        <Box component="form" onSubmit={(e) => {
+          console.log('📝 Form onSubmit event triggered:', e);
+          return handleSubmit(doSubmit)(e);
+        }}>
           <Box sx={{ display: 'grid', gap: { xs: 1.5, md: 2 }, gridTemplateColumns: 'repeat(12, 1fr)', alignItems: 'center' }}>
-            
+
             <Fade in={step === 0}>
               <Box sx={{ gridColumn: step === 0 ? '1 / -1' : '1 / 1', display: step === 0 ? 'block' : 'none' }}>
                 <PersonalDetailsSection control={control} />
@@ -213,7 +218,13 @@ const EmployeeForm = React.memo(({
                   Cancel
                 </Button>
                 {step === 2 ? (
-                  <Button type="submit" variant="contained">
+                  <Button 
+                    type="submit" 
+                    variant="contained"
+                    onClick={(e) => {
+                      console.log('🔘 Wizard Submit button clicked:', e);
+                    }}
+                  >
                     {submitLabel}
                   </Button>
                 ) : (
@@ -232,9 +243,12 @@ const EmployeeForm = React.memo(({
   // Non-wizard mode - show all sections
   return (
     <Paper sx={{ p: { xs: 2, md: 3 }, pl: { md: 4 }, mb: 2, borderRadius: 2 }} elevation={2}>
-      <Box component="form" onSubmit={handleSubmit(doSubmit)}>
+      <Box component="form" onSubmit={(e) => {
+        console.log('📝 Form onSubmit event triggered:', e);
+        return handleSubmit(doSubmit)(e);
+      }}>
         <Box sx={{ display: 'grid', gap: { xs: 1.5, md: 2 }, gridTemplateColumns: 'repeat(12, 1fr)', alignItems: 'center' }}>
-          
+
           {showHeader && (
             <Box sx={{ gridColumn: '1 / -1' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: 2, py: 0.5, borderRadius: 1, bgcolor: 'action.hover', borderBottom: '1px solid', borderColor: 'divider' }}>
@@ -254,27 +268,33 @@ const EmployeeForm = React.memo(({
 
           <PersonalDetailsSection control={control} />
           <Box sx={{ gridColumn: '1 / -1' }}><Divider /></Box>
-          
+
           <EmergencyContactSection control={control} />
           <Box sx={{ gridColumn: '1 / -1' }}><Divider /></Box>
-          
+
           <EducationHealthTaxSection control={control} />
           <Box sx={{ gridColumn: '1 / -1' }}><Divider /></Box>
-          
+
           <BankingSection control={control} />
           <Box sx={{ gridColumn: '1 / -1' }}><Divider /></Box>
-          
+
           <EmploymentSection control={control} />
           <Box sx={{ gridColumn: '1 / -1' }}><Divider /></Box>
-          
+
           <AddressSection control={control} />
-          
+
           <Box sx={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end' }}>
             <Stack direction="row" spacing={2}>
               <Button onClick={() => { reset(); if (onCancel) onCancel(); }} variant="text">
                 Cancel
               </Button>
-              <Button type="submit" variant="contained">
+              <Button 
+                type="submit" 
+                variant="contained"
+                onClick={(e) => {
+                  console.log('🔘 Submit button clicked:', e);
+                }}
+              >
                 {submitLabel}
               </Button>
             </Stack>

@@ -152,3 +152,4 @@ $RECYCLE.BIN/
 
 # Add any project-specific ignore patterns here
 # e.g., generated documentation, vendor files, etc.
+test-*
