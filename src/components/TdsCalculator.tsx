@@ -8,7 +8,7 @@ import { setDeductions } from '../features/salary/salarySlice'
 
 const states = ['Gujarat', 'Maharashtra', 'Karnataka', 'Delhi', 'Tamil Nadu']
 
-const TdsCalculator: React.FC = () => {
+const TdsCalculator: React.FC = React.memo(() => {
   const dispatch = useAppDispatch()
   const current = useAppSelector((s) => s.salary.current)
 
@@ -93,6 +93,8 @@ const TdsCalculator: React.FC = () => {
       }}>Reset</Button>
     </Box>
   )
-}
+});
+
+TdsCalculator.displayName = 'TdsCalculator';
 
 export default TdsCalculator

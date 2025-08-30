@@ -61,8 +61,8 @@ const PreviewPage: React.FC = () => {
                 {current.company.website && (
                   <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}><strong>Website:</strong> {current.company.website}</Typography>
                 )}
-                {current.company.contactNumber && (
-                  <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}><strong>Contact Number:</strong> {current.company.contactNumber}</Typography>
+                {(current.company.mobile || current.company.contactNumber) && (
+                  <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}><strong>Contact Number:</strong> {current.company.mobile || current.company.contactNumber}</Typography>
                 )}
               </div>
             </div>

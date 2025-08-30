@@ -12,6 +12,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+import logger from '../utils/logger';
 
 const schema = yup.object({
   company: yup.object({
@@ -102,7 +103,7 @@ const FormPage: React.FC = () => {
   const onSubmit = () => {
     // DEBUG: log form submit
     if (process.env.NODE_ENV === 'test') {
-      console.log('Form submit handler called');
+      logger.debug('FormPage', 'Form submit handler called');
     }
     const formValues = getValues();
     const companyForRedux = {

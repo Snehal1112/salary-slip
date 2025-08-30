@@ -9,7 +9,7 @@ interface Props {
   form: UseFormReturn<FormValues>;
 }
 
-const CompanyDetailsCard: React.FC<Props> = ({ form }) => {
+const CompanyDetailsCard: React.FC<Props> = React.memo(({ form }) => {
   const { register, setValue, watch } = form;
   const address: string[] = watch('company.address') || [''];
 
@@ -42,6 +42,8 @@ const CompanyDetailsCard: React.FC<Props> = ({ form }) => {
       <TextField label="Contact Number" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.mobile')} />
     </Paper>
   );
-};
+});
+
+CompanyDetailsCard.displayName = 'CompanyDetailsCard';
 
 export default CompanyDetailsCard;
