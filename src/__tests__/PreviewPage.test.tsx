@@ -147,7 +147,7 @@ describe('PreviewPage', () => {
     expect(screen.getByText('test@company.com')).toBeInTheDocument();
     expect(screen.getByText('Website:')).toBeInTheDocument();
     expect(screen.getByText('www.testcompany.com')).toBeInTheDocument();
-    expect(screen.getByText('Contact Number:')).toBeInTheDocument();
+    expect(screen.getByText('Contact:')).toBeInTheDocument();
     expect(screen.getByText('555-1234')).toBeInTheDocument();
   });
 
@@ -316,7 +316,7 @@ describe('PreviewPage', () => {
   it('navigates to edit page when Edit button is clicked', () => {
     renderWithProviders(<PreviewPage />);
 
-    const editButton = screen.getByRole('link', { name: 'Edit' });
+    const editButton = screen.getByRole('link', { name: 'Edit Slip' });
     expect(editButton).toHaveAttribute('href', '/form');
   });
 
@@ -324,7 +324,7 @@ describe('PreviewPage', () => {
     const store = createMockStore({});
     renderWithProviders(<PreviewPage />, store);
 
-    const loadSampleButton = screen.getByRole('button', { name: 'Load sample slip' });
+    const loadSampleButton = screen.getByRole('button', { name: 'Load Sample' });
     fireEvent.click(loadSampleButton);
 
     await waitFor(() => {
@@ -339,7 +339,7 @@ describe('PreviewPage', () => {
     const store = createMockStore({});
     renderWithProviders(<PreviewPage />, store);
 
-    const loadSampleButton = screen.getByRole('button', { name: 'Load sample slip' });
+    const loadSampleButton = screen.getByRole('button', { name: 'Load Sample' });
     fireEvent.click(loadSampleButton);
 
     await waitFor(() => {
@@ -367,7 +367,7 @@ describe('PreviewPage', () => {
     const store = createMockStore({});
     renderWithProviders(<PreviewPage />, store);
 
-    const loadSampleButton = screen.getByRole('button', { name: 'Load sample slip' });
+    const loadSampleButton = screen.getByRole('button', { name: 'Load Sample' });
     fireEvent.click(loadSampleButton);
 
     await waitFor(() => {
@@ -392,7 +392,7 @@ describe('PreviewPage', () => {
     const store = createMockStore({});
     renderWithProviders(<PreviewPage />, store);
 
-    const loadSampleButton = screen.getByRole('button', { name: 'Load sample slip' });
+    const loadSampleButton = screen.getByRole('button', { name: 'Load Sample' });
     fireEvent.click(loadSampleButton);
 
     await waitFor(() => {
@@ -409,7 +409,7 @@ describe('PreviewPage', () => {
     const store = createMockStore({});
     renderWithProviders(<PreviewPage />, store);
 
-    const loadSampleButton = screen.getByRole('button', { name: 'Load sample slip' });
+    const loadSampleButton = screen.getByRole('button', { name: 'Load Sample' });
     fireEvent.click(loadSampleButton);
 
     await waitFor(() => {
@@ -427,7 +427,7 @@ describe('PreviewPage', () => {
     renderWithProviders(<PreviewPage />);
 
     expect(screen.getByText('Employee Signature')).toBeInTheDocument();
-    expect(screen.getByText('Authorised Signatory')).toBeInTheDocument();
+    expect(screen.getByText('Authorized Signatory')).toBeInTheDocument();
   });
 
   it('renders disclaimer correctly', () => {
