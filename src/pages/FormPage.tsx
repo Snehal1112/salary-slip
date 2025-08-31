@@ -489,7 +489,7 @@ const FormPage: React.FC = () => {
               select
               {...register('template.titleAlign')} 
               fullWidth
-              SelectProps={{ native: true }}
+              slotProps={{ select: { native: true } }}
               error={!!errors.template?.titleAlign}
               helperText={errors.template?.titleAlign?.message}
             >
