@@ -29,6 +29,10 @@ test('can render form and submit, preview shows net', async () => {
     </Provider>,
   )
 
-  const el = await screen.findByText(/Net Salary/i)
-  expect(el).toBeTruthy()
+  // Check that preview shows net salary (there might be multiple instances)
+  const netSalaryElements = await screen.findAllByText(/Net Salary/i)
+  expect(netSalaryElements.length).toBeGreaterThan(0)
+  
+  // Check that we're in preview page by looking for specific preview content
+  expect(screen.getByText(/Total Earnings/i)).toBeInTheDocument()
 })

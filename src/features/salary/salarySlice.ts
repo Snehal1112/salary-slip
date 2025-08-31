@@ -204,6 +204,7 @@ export const {
   loadSlip,
   deleteSlip,
   resetCurrent,
+  setTemplate,
   exportState,
   importState,
 } = salarySlice.actions;

@@ -1,18 +1,27 @@
-import React from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import type { FormValues } from '../features/salary/types';
 import CompanyDetailsCard from '../components/CompanyDetailsCard';
-import { Container, TextField, Box, Button, Typography, Paper, Table, TableBody, TableCell, TableHead, TableRow, IconButton, Switch, FormControlLabel, Divider } from '@mui/material';
+import { 
+  Container, TextField, Box, Button, Typography, Paper, Table, TableBody, 
+  TableCell, TableHead, TableRow, IconButton, Switch, FormControlLabel, 
+  Divider, Alert, Snackbar, CircularProgress, Chip
+} from '@mui/material';
 import PageBreadcrumbs from '../components/PageBreadcrumbs';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import PreviewIcon from '@mui/icons-material/Preview';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { saveSlip } from '../features/salary/salarySlice';
-import { setCompany, setEmployee } from '../features/salary/salarySlice';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { 
+  saveSlip, setCompany, setEmployee, setIncome, setDeductions, 
+  setWorkingDays, setTemplate, recalc 
+} from '../features/salary/salarySlice';
+import { useForm, useFieldArray, Controller, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import logger from '../utils/logger';
+import { formatCurrency } from '../utils/currency';
 
 const schema = yup.object({
   company: yup.object({
@@ -50,6 +59,11 @@ const schema = yup.object({
 
 const FormPage: React.FC = () => {
   const currentRaw = useAppSelector((s) => s.salary.current);
+  const [saving, setSaving] = useState(false);
+  const [snackbar, setSnackbar] = useState<{open: boolean, message: string, severity: 'success' | 'error'}>({ 
+    open: false, message: '', severity: 'success' 
+  });
+  
   const defaultValues: FormValues = {
     company: {
       name: currentRaw.company?.name || '',
@@ -94,17 +108,47 @@ const FormPage: React.FC = () => {
   const form = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues,
+    mode: 'onChange',
   });
-  const { register, handleSubmit, control, getValues } = form;
+  const { register, handleSubmit, control, getValues, formState: { errors, isValid } } = form;
 
   const { fields: incomeFields, append: appendIncome, remove: removeIncome } = useFieldArray({ control, name: 'income' });
   const { fields: dedFields, append: appendDed, remove: removeDed } = useFieldArray({ control, name: 'deductions' });
 
-  const onSubmit = () => {
-    // DEBUG: log form submit
-    if (process.env.NODE_ENV === 'test') {
-      logger.debug('FormPage', 'Form submit handler called');
+  // Watch form changes for real-time updates
+  const watchedIncome = useWatch({ control, name: 'income' });
+  const watchedDeductions = useWatch({ control, name: 'deductions' });
+  const watchedWorkingDays = useWatch({ control, name: 'workingDays' });
+  const watchedTemplate = useWatch({ control, name: 'template' });
+
+  // Real-time sync with Redux state for calculations
+  useEffect(() => {
+    if (watchedIncome) {
+      dispatch(setIncome(watchedIncome));
+      dispatch(recalc());
     }
+  }, [watchedIncome, dispatch]);
+
+  useEffect(() => {
+    if (watchedDeductions) {
+      dispatch(setDeductions(watchedDeductions));
+      dispatch(recalc());
+    }
+  }, [watchedDeductions, dispatch]);
+
+  useEffect(() => {
+    if (watchedWorkingDays) {
+      dispatch(setWorkingDays(watchedWorkingDays));
+    }
+  }, [watchedWorkingDays, dispatch]);
+
+  useEffect(() => {
+    if (watchedTemplate) {
+      dispatch(setTemplate(watchedTemplate));
+    }
+  }, [watchedTemplate, dispatch]);
+
+  const saveFormData = useCallback(async () => {
     const formValues = getValues();
     const companyForRedux = {
       name: formValues.company.name || '',
@@ -116,49 +160,199 @@ const FormPage: React.FC = () => {
       email: formValues.company.email || '',
       website: typeof formValues.company.website === 'string' ? formValues.company.website : '',
     };
+    
     dispatch(setCompany(companyForRedux));
     dispatch(setEmployee(formValues.employee));
-    dispatch({ type: 'salary/setWorkingDays', payload: formValues.workingDays }); // <-- ensure workingDays is updated
-    dispatch(saveSlip());
-    if (process.env.NODE_ENV !== 'test') {
-      navigate('/preview');
+    dispatch(setWorkingDays(formValues.workingDays));
+    dispatch(setIncome(formValues.income));
+    dispatch(setDeductions(formValues.deductions));
+    dispatch(setTemplate(formValues.template));
+    dispatch(recalc());
+  }, [dispatch, getValues]);
+
+  const onSubmit = async () => {
+    setSaving(true);
+    try {
+      // DEBUG: log form submit
+      if (process.env.NODE_ENV === 'test') {
+        logger.debug('FormPage', 'Form submit handler called');
+      }
+      
+      await saveFormData();
+      dispatch(saveSlip());
+      
+      setSnackbar({ open: true, message: 'Salary slip saved successfully!', severity: 'success' });
+      
+      if (process.env.NODE_ENV !== 'test') {
+        setTimeout(() => navigate('/preview'), 500); // Small delay for UX
+      }
+    } catch {
+      setSnackbar({ open: true, message: 'Error saving salary slip', severity: 'error' });
+    } finally {
+      setSaving(false);
     }
   };
+
+  const handlePreview = useCallback(async () => {
+    await saveFormData();
+    navigate('/preview');
+  }, [saveFormData, navigate]);
 
   return (
     <Container sx={{ py: 3 }}>
       <PageBreadcrumbs muted size="small" />
       <form onSubmit={handleSubmit(onSubmit)}>
+        {/* Header with status */}
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h4" component="h1" fontWeight={600}>
+            Salary Slip Form
+          </Typography>
+          <Chip 
+            label={isValid ? 'Valid' : 'Has Errors'} 
+            color={isValid ? 'success' : 'warning'} 
+            size="small" 
+          />
+        </Box>
+        
         {/* Company & Employee Details Section - now two separate cards */}
-        <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' }, mb: 3 }}>
+        <Box sx={{ display: 'flex', gap: { xs: 2, md: 3 }, flexDirection: { xs: 'column', md: 'row' }, mb: 4 }}>
           <Box sx={{ flex: '1 1 0' }}>
             <CompanyDetailsCard form={form} />
           </Box>
           <Box sx={{ flex: '1 1 0' }}>
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 1 }}>
+            <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, height: 'fit-content' }}>
               <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>Employee Details</Typography>
-              <TextField label="Employee Name" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('employee.name')} />
-              <TextField label="Employee Code" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('employee.code')} />
-              <TextField label="Designation" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('employee.designation')} />
-              <TextField label="PAN" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('employee.pan')} />
-              <TextField label="Bank Account Number" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('employee.bankAccount')} />
-              <TextField label="Bank Name" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('employee.bankName')} />
-              <TextField label="Cheque Number" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('employee.chequeNumber')} />
-              <Box sx={{ mt: 4 }}>
-                <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>Working Days</Typography>
-                <TextField label="Total Working Days" variant="outlined" fullWidth size="medium" type="number" sx={{ mb: 2 }} {...register('workingDays.totalWorkingDays')} />
-                <TextField label="Number of Working Days Attended" variant="outlined" fullWidth size="medium" type="number" sx={{ mb: 2 }} {...register('workingDays.daysAttended')} />
-                <TextField label="Leaves Taken" variant="outlined" fullWidth size="medium" type="number" sx={{ mb: 2 }} {...register('workingDays.leavesTaken')} />
-                <TextField label="Balance Leaves" variant="outlined" fullWidth size="medium" type="number" sx={{ mb: 2 }} {...register('workingDays.balanceLeaves')} />
+              <TextField 
+                label="Employee Name" 
+                variant="outlined" 
+                fullWidth 
+                size="medium" 
+                sx={{ mb: 2 }} 
+                {...register('employee.name')}
+                error={!!errors.employee?.name}
+                helperText={errors.employee?.name?.message}
+              />
+              <TextField 
+                label="Employee Code" 
+                variant="outlined" 
+                fullWidth 
+                size="medium" 
+                sx={{ mb: 2 }} 
+                {...register('employee.code')}
+                error={!!errors.employee?.code}
+                helperText={errors.employee?.code?.message}
+              />
+              <TextField 
+                label="Designation" 
+                variant="outlined" 
+                fullWidth 
+                size="medium" 
+                sx={{ mb: 2 }} 
+                {...register('employee.designation')}
+                error={!!errors.employee?.designation}
+                helperText={errors.employee?.designation?.message}
+              />
+              <TextField 
+                label="PAN" 
+                variant="outlined" 
+                fullWidth 
+                size="medium" 
+                sx={{ mb: 2 }} 
+                {...register('employee.pan')}
+                error={!!errors.employee?.pan}
+                helperText={errors.employee?.pan?.message}
+              />
+              <TextField 
+                label="Bank Account Number" 
+                variant="outlined" 
+                fullWidth 
+                size="medium" 
+                sx={{ mb: 2 }} 
+                {...register('employee.bankAccount')}
+                error={!!errors.employee?.bankAccount}
+                helperText={errors.employee?.bankAccount?.message}
+              />
+              <TextField 
+                label="Bank Name" 
+                variant="outlined" 
+                fullWidth 
+                size="medium" 
+                sx={{ mb: 2 }} 
+                {...register('employee.bankName')}
+                error={!!errors.employee?.bankName}
+                helperText={errors.employee?.bankName?.message}
+              />
+              <TextField 
+                label="Cheque Number" 
+                variant="outlined" 
+                fullWidth 
+                size="medium" 
+                sx={{ mb: 2 }} 
+                {...register('employee.chequeNumber')}
+                error={!!errors.employee?.chequeNumber}
+                helperText={errors.employee?.chequeNumber?.message}
+              />
+              <Divider sx={{ my: 3 }} />
+              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>Working Days</Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+                <TextField 
+                  label="Total Working Days" 
+                  variant="outlined" 
+                  fullWidth 
+                  size="medium" 
+                  type="number" 
+                  inputProps={{ min: 0 }}
+                  {...register('workingDays.totalWorkingDays')}
+                  error={!!errors.workingDays?.totalWorkingDays}
+                  helperText={errors.workingDays?.totalWorkingDays?.message}
+                />
+                <TextField 
+                  label="Days Attended" 
+                  variant="outlined" 
+                  fullWidth 
+                  size="medium" 
+                  type="number" 
+                  inputProps={{ min: 0 }}
+                  {...register('workingDays.daysAttended')}
+                  error={!!errors.workingDays?.daysAttended}
+                  helperText={errors.workingDays?.daysAttended?.message}
+                />
+                <TextField 
+                  label="Leaves Taken" 
+                  variant="outlined" 
+                  fullWidth 
+                  size="medium" 
+                  type="number" 
+                  inputProps={{ min: 0 }}
+                  {...register('workingDays.leavesTaken')}
+                  error={!!errors.workingDays?.leavesTaken}
+                  helperText={errors.workingDays?.leavesTaken?.message}
+                />
+                <TextField 
+                  label="Balance Leaves" 
+                  variant="outlined" 
+                  fullWidth 
+                  size="medium" 
+                  type="number" 
+                  inputProps={{ min: 0 }}
+                  {...register('workingDays.balanceLeaves')}
+                  error={!!errors.workingDays?.balanceLeaves}
+                  helperText={errors.workingDays?.balanceLeaves?.message}
+                />
               </Box>
             </Paper>
           </Box>
         </Box>
         {/* Income & Deductions Section */}
-        <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' }, mt: 2 }}>
+        <Box sx={{ display: 'flex', gap: { xs: 2, md: 3 }, flexDirection: { xs: 'column', lg: 'row' }, mt: 4 }}>
           <Box sx={{ flex: '1 1 0' }}>
-            <Paper variant="outlined" sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>Income</Typography>
+            <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6" fontWeight={600}>Income</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Total: {formatCurrency(currentRaw.totalIncome)}
+                </Typography>
+              </Box>
               <Table size="small">
                 <TableHead>
                   <TableRow>
@@ -191,8 +385,13 @@ const FormPage: React.FC = () => {
             </Paper>
           </Box>
           <Box sx={{ flex: '1 1 0' }}>
-            <Paper variant="outlined" sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>Deductions</Typography>
+            <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6" fontWeight={600}>Deductions</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Total: {formatCurrency(currentRaw.totalDeductions)}
+                </Typography>
+              </Box>
               <Table size="small">
                 <TableHead>
                   <TableRow>
@@ -225,26 +424,78 @@ const FormPage: React.FC = () => {
             </Paper>
           </Box>
         </Box>
-        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ display: 'flex', gap: 3 }}>
-            <Typography>Total Income: <strong>{currentRaw.totalIncome}</strong></Typography>
-            <Typography>Total Deductions: <strong>{currentRaw.totalDeductions}</strong></Typography>
-            <Typography>Net: <strong>{currentRaw.netSalary}</strong></Typography>
+        {/* Summary and Actions */}
+        <Paper sx={{ p: 3, mt: 4, borderRadius: 2, bgcolor: 'grey.50' }}>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>Summary</Typography>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 3, mb: 3 }}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary">Total Income</Typography>
+              <Typography variant="h6" color="success.main" fontWeight={600}>
+                {formatCurrency(currentRaw.totalIncome)}
+              </Typography>
+            </Box>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary">Total Deductions</Typography>
+              <Typography variant="h6" color="error.main" fontWeight={600}>
+                {formatCurrency(currentRaw.totalDeductions)}
+              </Typography>
+            </Box>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary">Net Salary</Typography>
+              <Typography variant="h6" color="primary.main" fontWeight={600}>
+                {formatCurrency(currentRaw.netSalary)}
+              </Typography>
+            </Box>
           </Box>
-          <Box>
-            <Button type="submit" variant="contained" color="primary" size="small" sx={{ mr: 1, px: 3 }}>SAVE SLIP</Button>
-            <Button variant="outlined" href="/preview" size="small">PREVIEW</Button>
+          
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+            <Button 
+              variant="outlined" 
+              onClick={handlePreview}
+              startIcon={<PreviewIcon />}
+              disabled={saving}
+              sx={{ minWidth: 120 }}
+            >
+              Preview
+            </Button>
+            <Button 
+              type="submit" 
+              variant="contained" 
+              color="primary"
+              startIcon={saving ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />}
+              disabled={saving || !isValid}
+              sx={{ minWidth: 120 }}
+            >
+              {saving ? 'Saving...' : 'Save Slip'}
+            </Button>
           </Box>
-        </Box>
-        <Divider sx={{ my: 3 }} />
+        </Paper>
         {/* Template settings */}
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="subtitle1">Template settings</Typography>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 1 }}>
-            <TextField label="Title text" {...register('template.titleText')} sx={{ flex: 1 }} />
-            <TextField label="Title align" {...register('template.titleAlign')} sx={{ width: 160 }} />
+        <Paper sx={{ p: 3, mt: 3, borderRadius: 2 }}>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>Template Settings</Typography>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '2fr 1fr' }, gap: 2, mb: 2 }}>
+            <TextField 
+              label="Title text" 
+              {...register('template.titleText')} 
+              fullWidth
+              error={!!errors.template?.titleText}
+              helperText={errors.template?.titleText?.message}
+            />
+            <TextField 
+              label="Title align" 
+              select
+              {...register('template.titleAlign')} 
+              fullWidth
+              SelectProps={{ native: true }}
+              error={!!errors.template?.titleAlign}
+              helperText={errors.template?.titleAlign?.message}
+            >
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </TextField>
           </Box>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 1 }}>
+          <Box sx={{ display: 'flex', gap: 3, alignItems: 'center', flexWrap: 'wrap' }}>
             <Controller
               name="template.showCompanyName"
               control={control}
@@ -268,6 +519,22 @@ const FormPage: React.FC = () => {
           </Box>
         </Paper>
       </form>
+      
+      {/* Snackbar for notifications */}
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={4000} 
+        onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          severity={snackbar.severity} 
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+          variant="filled"
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

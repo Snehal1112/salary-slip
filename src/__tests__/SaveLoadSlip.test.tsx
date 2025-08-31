@@ -80,7 +80,7 @@ test('save slip persists to store and can be previewed', async () => {
   await act(async () => {
     fireEvent.change(totalWorkingDays, { target: { value: '30' } })
   });
-  const daysAttended = screen.getByLabelText(/Number of Working Days Attended/i)
+  const daysAttended = screen.getByLabelText(/Days Attended/i)
   await act(async () => {
     fireEvent.change(daysAttended, { target: { value: '30' } })
   });
