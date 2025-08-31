@@ -11,12 +11,11 @@ interface Props {
 }
 
 const CompanyDetailsCard: React.FC<Props> = React.memo(({ form }) => {
-  const { register, control, setValue } = form;
+  const { register, control, setValue, formState: { errors } } = form;
   const address = useWatch({
     control,
-    name: 'company.address',
-    defaultValue: ['']
-  }) as string[];
+    name: 'company.address'
+  }) as string[] || [''];
 
   const handleAddAddress = () => {
     const newAddress = [...address, ''];
@@ -33,15 +32,27 @@ const CompanyDetailsCard: React.FC<Props> = React.memo(({ form }) => {
   return (
     <Paper variant="outlined" sx={{ p: 2, borderRadius: 1 }}>
       <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>Company Details</Typography>
-      <TextField label="Company Name" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.name')} />
-      {address.map((line, idx) => (
+      <TextField 
+        label="Company Name" 
+        variant="outlined" 
+        fullWidth 
+        size="medium" 
+        sx={{ mb: 2 }} 
+        {...register('company.name')}
+        error={!!errors.company?.name}
+        helperText={errors.company?.name?.message}
+      />
+      {address.map((_, idx) => (
         <Box key={idx} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <TextField 
             label={`Address Line ${idx + 1}`} 
             variant="outlined" 
             fullWidth 
             size="medium" 
-            {...register(`company.address.${idx}` as const)} 
+            defaultValue={address[idx] || ''}
+            {...register(`company.address.${idx}` as const)}
+            error={!!errors.company?.address?.[idx]}
+            helperText={errors.company?.address?.[idx]?.message}
           />
           <IconButton 
             sx={{ ml: 1 }} 
@@ -53,20 +64,63 @@ const CompanyDetailsCard: React.FC<Props> = React.memo(({ form }) => {
           </IconButton>
         </Box>
       ))}
-      <Button 
-        startIcon={<AddIcon />} 
-        onClick={handleAddAddress} 
-        size="small" 
-        variant="text" 
-        color="primary" 
-        sx={{ textTransform: 'none', fontWeight: 700, mb: 2 }}
-      >
-        Add Address Line
-      </Button>
-      <TextField label="GSTIN" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.gstin')} />
-      <TextField label="Email" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.email')} />
-      <TextField label="Website" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.website')} />
-      <TextField label="Contact Number" variant="outlined" fullWidth size="medium" sx={{ mb: 2 }} {...register('company.mobile')} />
+      <Box sx={{ mb: 2 }}>
+        <Button 
+          startIcon={<AddIcon />} 
+          onClick={handleAddAddress} 
+          size="small" 
+          variant="text" 
+          color="primary" 
+          sx={{ textTransform: 'none', fontWeight: 700 }}
+        >
+          Add Address Line
+        </Button>
+        {errors.company?.address && typeof errors.company.address === 'object' && 'message' in errors.company.address && (
+          <Typography variant="caption" color="error.main" sx={{ display: 'block', mt: 1, ml: 1 }}>
+            {errors.company.address.message}
+          </Typography>
+        )}
+      </Box>
+      <TextField 
+        label="GSTIN" 
+        variant="outlined" 
+        fullWidth 
+        size="medium" 
+        sx={{ mb: 2 }} 
+        {...register('company.gstin')}
+        error={!!errors.company?.gstin}
+        helperText={errors.company?.gstin?.message}
+      />
+      <TextField 
+        label="Email" 
+        variant="outlined" 
+        fullWidth 
+        size="medium" 
+        sx={{ mb: 2 }} 
+        {...register('company.email')}
+        error={!!errors.company?.email}
+        helperText={errors.company?.email?.message}
+      />
+      <TextField 
+        label="Website" 
+        variant="outlined" 
+        fullWidth 
+        size="medium" 
+        sx={{ mb: 2 }} 
+        {...register('company.website')}
+        error={!!errors.company?.website}
+        helperText={errors.company?.website?.message}
+      />
+      <TextField 
+        label="Contact Number" 
+        variant="outlined" 
+        fullWidth 
+        size="medium" 
+        sx={{ mb: 2 }} 
+        {...register('company.mobile')}
+        error={!!errors.company?.mobile}
+        helperText={errors.company?.mobile?.message}
+      />
     </Paper>
   );
 });

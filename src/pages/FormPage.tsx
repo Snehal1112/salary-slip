@@ -26,7 +26,10 @@ import { formatCurrency } from '../utils/currency';
 const schema = yup.object({
   company: yup.object({
     name: yup.string().required('Company name required'),
-    address: yup.array().of(yup.string().required('Address line required')).min(1, 'At least one address line required').required(),
+    address: yup.array().of(yup.string().default('')).min(1, 'At least one address line required').required()
+      .test('at-least-one-non-empty', 'At least one address line must be filled', function(value) {
+        return value && value.some(line => line && line.trim().length > 0);
+      }),
     mobile: yup.string().optional(),
     gstin: yup.string().optional(),
     email: yup.string().email().optional(),

@@ -27,7 +27,6 @@ import {
   Delete as DeleteIcon,
   FileDownload as FileDownloadIcon
 } from '@mui/icons-material';
-import PageBreadcrumbs from '../components/PageBreadcrumbs';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { loadSlip, deleteSlip } from '../features/salary/salarySlice';
@@ -55,12 +54,11 @@ const HomePage: React.FC = () => {
 
   return (
     <Container sx={{ py: 4 }}>
-      <PageBreadcrumbs items={[{ label: 'Home' }]} />
 
       {/* Header */}
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-          Salary Slip Generator
+          Salary Slip Management
         </Typography>
         <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
           Professional salary slip management for your organization
