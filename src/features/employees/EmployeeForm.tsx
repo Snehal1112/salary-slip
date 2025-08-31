@@ -150,7 +150,6 @@ const EmployeeForm = React.memo(({
 
   const doSubmit = React.useCallback((formData: Employee) => {
     // Clear draft on submit
-    console.log('🚀 EmployeeForm doSubmit called with data:', formData);
     logger.debug('EmployeeForm', "doSubmit function called");
     removeItem(draftKey);
     onSubmit(formData);
@@ -186,7 +185,6 @@ const EmployeeForm = React.memo(({
         </Stepper>
 
         <Box component="form" onSubmit={(e) => {
-          console.log('📝 Form onSubmit event triggered:', e);
           return handleSubmit(doSubmit)(e);
         }}>
           <Box sx={{ display: 'grid', gap: { xs: 1.5, md: 2 }, gridTemplateColumns: 'repeat(12, 1fr)', alignItems: 'center' }}>
@@ -221,9 +219,6 @@ const EmployeeForm = React.memo(({
                   <Button 
                     type="submit" 
                     variant="contained"
-                    onClick={(e) => {
-                      console.log('🔘 Wizard Submit button clicked:', e);
-                    }}
                   >
                     {submitLabel}
                   </Button>
@@ -243,10 +238,7 @@ const EmployeeForm = React.memo(({
   // Non-wizard mode - show all sections
   return (
     <Paper sx={{ p: { xs: 2, md: 3 }, pl: { md: 4 }, mb: 2, borderRadius: 2 }} elevation={2}>
-      <Box component="form" onSubmit={(e) => {
-        console.log('📝 Form onSubmit event triggered:', e);
-        return handleSubmit(doSubmit)(e);
-      }}>
+      <Box component="form" onSubmit={handleSubmit(doSubmit)}>
         <Box sx={{ display: 'grid', gap: { xs: 1.5, md: 2 }, gridTemplateColumns: 'repeat(12, 1fr)', alignItems: 'center' }}>
 
           {showHeader && (
@@ -291,9 +283,6 @@ const EmployeeForm = React.memo(({
               <Button 
                 type="submit" 
                 variant="contained"
-                onClick={(e) => {
-                  console.log('🔘 Submit button clicked:', e);
-                }}
               >
                 {submitLabel}
               </Button>

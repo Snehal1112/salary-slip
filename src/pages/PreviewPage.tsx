@@ -10,6 +10,7 @@ import NetSalarySection from '../components/NetSalarySection'
 import { formatCurrency } from '../utils/currency'
 import { estimateAnnualTax, annualToMonthly } from '../utils/tax'
 import { computeProfessionalTax } from '../utils/professionalTax'
+import logger from '../utils/logger'
 
 // Custom hook for PDF functionality
 const usePDFExport = (ref: React.RefObject<HTMLDivElement | null>) => {
@@ -67,7 +68,7 @@ const usePDFExport = (ref: React.RefObject<HTMLDivElement | null>) => {
 
       pdf.save(filename)
     } catch (error) {
-      console.warn('PDF export failed, falling back to print:', error)
+      logger.warn('PreviewPage', 'PDF export failed, falling back to print:', error)
       window.print()
     }
   }, [ref])

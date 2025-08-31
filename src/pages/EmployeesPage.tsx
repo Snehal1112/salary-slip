@@ -105,7 +105,6 @@ const EmployeesPage: React.FC = () => {
 
   const onSubmit = (data: Employee) => {
     try {
-      console.log("submit button called");
       // Convert Employee to EmployeeRequired by providing defaults for required fields
       const employeeData: EmployeeRequired = {
         ...data,
