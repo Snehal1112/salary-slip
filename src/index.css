@@ -70,18 +70,7 @@ h1 {
     font-family: 'Inter', 'Roboto', system-ui, -apple-system, 'Segoe UI', Arial;
     line-height: 1.3;
   }
-  .salary-slip .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 6px;
-    border-bottom: 1px solid #eef2f5;
-    padding-bottom: 10px;
-  }
-  .salary-slip .header .company {
-    max-width: 65%;
-  }
+
   .salary-slip .meta-box {
     background: transparent;
     padding: 6px 10px;

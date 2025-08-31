@@ -1,41 +1,15 @@
 import React, { useRef, useMemo, useCallback } from 'react'
 import { useAppSelector, useAppDispatch } from '../store/hooks'
 import { setEmployee, setIncome, setDeductions, setWorkingDays, setMonth, recalc, saveSlip } from '../features/salary/salarySlice'
-import { Container, Typography, Paper, Box, Table, TableBody, TableCell, TableHead, TableRow, Button } from '@mui/material'
+import { Container, Paper, Box, Button, Typography } from '@mui/material'
 import PageBreadcrumbs from '../components/PageBreadcrumbs'
+import CompanyHeader from '../components/CompanyHeader'
+import EmployeeInfoTable from '../components/EmployeeInfoTable'
+import EarningsDeductionsTable from '../components/EarningsDeductionsTable'
+import NetSalarySection from '../components/NetSalarySection'
 import { formatCurrency } from '../utils/currency'
 import { estimateAnnualTax, annualToMonthly } from '../utils/tax'
 import { computeProfessionalTax } from '../utils/professionalTax'
-
-// Static style objects to prevent recreation on each render
-const headerBoxStyles = {
-  borderBottom: '2px solid',
-  borderColor: 'grey.400',
-  pb: { xs: 3, md: 4 },
-  mb: { xs: 4, md: 5 },
-  background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-  p: { xs: 3, sm: 3.5, md: 4 },
-  borderRadius: 2,
-  boxShadow: '3px 3px 8px rgba(0,0,0,0.08)'
-}
-
-const employeeInfoStyles = {
-  mb: { xs: 4, md: 5 }
-}
-
-const netSalaryStyles = {
-  textAlign: 'center',
-  my: 4,
-  p: { xs: 3, md: 4 },
-  bgcolor: '#ffffff',
-  borderRadius: 1,
-  border: '1px solid',
-  borderColor: 'grey.200',
-  position: 'relative',
-  overflow: 'hidden',
-  boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-  transition: 'all 0.2s ease-in-out',
-}
 
 // Custom hook for PDF functionality
 const usePDFExport = (ref: React.RefObject<HTMLDivElement | null>) => {
@@ -112,75 +86,12 @@ const PreviewPage: React.FC = React.memo(() => {
     return formatCurrency(Number.isFinite(n) ? n : 0)
   }, [])
 
-  // Memoized processed company name
-  const processedCompanyName = useMemo(() => {
-    if (typeof current.company.name === 'string') {
-      return current.company.name.replace(/\s*\n\s*/g, ' ').replace(/\s{2,}/g, ' ').replace(/\n/g, ' ').trim()
-    }
-    return current.company.name
-  }, [current.company.name])
-
-  // Memoized processed company address
-  const processedCompanyAddress = useMemo(() => {
-    if (!current.company.address) return null
-
-    if (Array.isArray(current.company.address)) {
-      return current.company.address.map((line: string, idx: number) => ({
-        key: idx,
-        text: line
-      }))
-    }
-
-    return String(current.company.address)
-      .split(/,|\n/)
-      .map((line: string, idx: number) => ({
-        key: idx,
-        text: line.trim()
-      }))
-  }, [current.company.address])
-
   // Memoized formatted values
   const formattedValues = useMemo(() => ({
     totalIncome: fmt(current.totalIncome),
     totalDeductions: fmt(current.totalDeductions),
     netSalary: fmt(current.netSalary)
   }), [current.totalIncome, current.totalDeductions, current.netSalary, fmt])
-
-  // Memoized table rows for earnings and deductions
-  const tableRows = useMemo(() => {
-    const left = current.income || []
-    const right = current.deductions || []
-    const max = Math.max(left.length, right.length)
-    const rows = [] as React.ReactNode[]
-
-    for (let i = 0; i < max; i++) {
-      const l = left[i]
-      const r = right[i]
-      rows.push(
-        <TableRow
-          key={i}
-          sx={{
-            '&:nth-of-type(odd)': { bgcolor: 'grey.50' },
-            '&:hover': { bgcolor: 'grey.100' }
-          }}
-        >
-          <TableCell sx={{ fontWeight: 400, color: l ? 'grey.700' : 'transparent' }}>
-            {l ? l.particular : ''}
-          </TableCell>
-          <TableCell align="right" sx={{ fontWeight: 500, color: l ? 'grey.800' : 'transparent' }}>
-            {l ? fmt(l.amount) : ''}
-          </TableCell>
-          <TableCell sx={{ fontWeight: 400, color: r ? 'grey.700' : 'transparent' }}>
-            {r ? r.particular : ''}
-          </TableCell>
-          <TableCell align="right" sx={{ fontWeight: 500, color: r ? 'grey.800' : 'transparent' }}>
-            {r ? fmt(r.amount) : ''}
-          </TableCell>
-        </TableRow>
-      )
-    }
-    return rows
-  }, [current.income, current.deductions, fmt])
 
   // Memoized sample data handler
   const handleLoadSample = useCallback(() => {
@@ -243,7 +154,7 @@ const PreviewPage: React.FC = React.memo(() => {
       <PageBreadcrumbs />
       <Paper sx={{
         p: { xs: 2, sm: 3, md: 4 },
-        width: { xs: '100%', sm: '210mm' },
+        width: { xs: '100%' },
         minWidth: { sm: '210mm' },
         mx: 'auto',
         overflow: 'hidden',
@@ -251,357 +162,31 @@ const PreviewPage: React.FC = React.memo(() => {
         bgcolor: '#ffffff'
       }} className="print-area">
         <div className="salary-slip" ref={ref}>
-          {/* Header Section with Company Info */}
-          <Box sx={headerBoxStyles}>
-            <div className="header">
-              <Box sx={{
-                display: 'flex',
-                flexDirection: { xs: 'column', sm: 'row' },
-                justifyContent: 'space-between',
-                alignItems: { xs: 'center', sm: 'flex-start' },
-                gap: { xs: 2, sm: 1 }
-              }}>
-                <Box sx={{ flex: 1, textAlign: { xs: 'center', sm: 'left' } }}>
-                  {current.template?.showCompanyName !== false && (
-                    <Typography
-                      variant="h3"
-                      sx={{
-                        fontWeight: 700,
-                        letterSpacing: 0.3,
-                        color: 'grey.800',
-                        mb: { xs: 2, md: 2.5 },
-                        fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem' },
-                        lineHeight: 1.2
-                      }}
-                      className="company-name"
-                    >
-                      {processedCompanyName}
-                    </Typography>
-                  )}
-                  <Box sx={{ mt: 1, mb: { xs: 1.5, md: 2 } }}>
-                    {current.template?.showCompanyAddress !== false && current.company.address && (
-                      <Box sx={{ mb: 1 }}>
-                        {processedCompanyAddress && (
-                          Array.isArray(processedCompanyAddress)
-                            ? processedCompanyAddress.map(({ key, text }) => (
-                              <Typography key={key} variant="body1" sx={{
-                                color: 'grey.600',
-                                lineHeight: 1.6,
-                                fontWeight: 400,
-                                fontSize: { xs: '0.9rem', md: '1rem' }
-                              }}>
-                                {text}
-                              </Typography>
-                            ))
-                            : processedCompanyAddress
-                        )}
-                      </Box>
-                    )}
-                    {/* Company Details in a clean grid */}
-                    <Box sx={{
-                      display: 'flex',
-                      flexDirection: { xs: 'column', sm: 'row' },
-                      flexWrap: 'wrap',
-                      gap: { xs: 0.5, sm: 2 },
-                      mt: 2
-                    }}>
-                      {current.company.gstin && (
-                        <Typography variant="body2" sx={{
-                          color: 'grey.500',
-                          fontWeight: 400,
-                          fontSize: { xs: '0.8rem', md: '0.875rem' }
-                        }}>
-                          <Box component="span" sx={{ fontWeight: 600, color: 'grey.700' }}>GSTIN:</Box> {current.company.gstin}
-                        </Typography>
-                      )}
-                      {current.company.email && (
-                        <Typography variant="body2" sx={{
-                          color: 'grey.500',
-                          fontWeight: 400,
-                          fontSize: { xs: '0.8rem', md: '0.875rem' }
-                        }}>
-                          <Box component="span" sx={{ fontWeight: 600, color: 'grey.700' }}>Email:</Box> {current.company.email}
-                        </Typography>
-                      )}
-                      {current.company.website && (
-                        <Typography variant="body2" sx={{
-                          color: 'grey.500',
-                          fontWeight: 400,
-                          fontSize: { xs: '0.8rem', md: '0.875rem' }
-                        }}>
-                          <Box component="span" sx={{ fontWeight: 600, color: 'grey.700' }}>Website:</Box> {current.company.website}
-                        </Typography>
-                      )}
-                      {(current.company.mobile || current.company.contactNumber) && (
-                        <Typography variant="body2" sx={{
-                          color: 'grey.500',
-                          fontWeight: 400,
-                          fontSize: { xs: '0.8rem', md: '0.875rem' }
-                        }}>
-                          <Box component="span" sx={{ fontWeight: 600, color: 'grey.700' }}>Contact:</Box> {current.company.mobile || current.company.contactNumber}
-                        </Typography>
-                      )}
-                    </Box>
-                  </Box>
-                </Box>
-                <Box sx={{
-                  textAlign: 'center',
-                  bgcolor: '#ffffff',
-                  color: 'grey.800',
-                  p: { xs: 2.5, md: 3 },
-                  borderRadius: 2,
-                  minWidth: { xs: 140, md: 160 },
-                  alignSelf: { xs: 'center', sm: 'flex-start' },
-                  border: '1px solid',
-                  borderColor: 'grey.200',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  transition: 'all 0.2s ease-in-out',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: '2px',
-                    background: '#6c757d'
-                  },
-                  '&:hover': {
-                    borderColor: 'grey.300',
-                    transform: 'translateY(-1px)'
-                  }
-                }}>
-                  <Typography variant="h6" sx={{
-                    fontWeight: 600,
-                    mb: 0.5,
-                    fontSize: { xs: '1.1rem', md: '1.25rem' },
-                    letterSpacing: 0.5
-                  }}>
-                    {current.template?.titleText || 'PAYSLIP'}
-                  </Typography>
-                  <Typography variant="body2" sx={{
-                    opacity: 0.85,
-                    fontSize: { xs: '0.8rem', md: '0.875rem' },
-                    fontWeight: 400
-                  }}>
-                    {current.month || new Date().toLocaleDateString('en-US', { month: 'short', year: '2-digit' })}
-                  </Typography>
-                </Box>
-              </Box>
-            </div>
-          </Box>
 
-          {/* Employee Information Section */}
-          <Box sx={employeeInfoStyles}>
-            <Typography variant="h6" sx={{
-              fontWeight: 600,
-              mb: 3,
-              color: 'grey.800',
-              fontSize: '1.1rem',
-              textAlign: 'center'
-            }}>
-              Employee Information
-            </Typography>
-            <Box sx={{
-              background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-              border: '1px solid',
-              borderColor: 'grey.300',
-              borderRadius: 2,
-              overflow: 'hidden',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
-            }}>
-              <Table size="small" sx={{
-              '& .MuiTableCell-root': {
-                border: 'none',
-                borderBottom: '1px solid',
-                borderBottomColor: 'grey.300',
-                fontSize: '0.95rem',
-                py: 2,
-                fontWeight: 400
-              },
-              '& .MuiTableRow-root:hover': {
-                bgcolor: 'grey.100'
-              },
-              '& .MuiTableRow-root:nth-of-type(odd)': {
-                bgcolor: 'grey.50'
-              }
-            }}>
-              <TableBody>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.300', color: 'grey.800', width: '30%' }}>
-                    Employee Name
-                  </TableCell>
-                  <TableCell sx={{ color: 'grey.800' }}>
-                    {current.employee.name || '-'}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.300', color: 'grey.800', width: '30%' }}>
-                    Employee Code
-                  </TableCell>
-                  <TableCell sx={{ color: 'grey.800' }}>
-                    {current.employee.code || '-'}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.300', color: 'grey.800' }}>
-                    Designation
-                  </TableCell>
-                  <TableCell sx={{ color: 'grey.800' }}>
-                    {current.employee.designation || '-'}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.300', color: 'grey.800' }}>
-                    PAN
-                  </TableCell>
-                  <TableCell sx={{ color: 'grey.800' }}>
-                    {current.employee.pan || '-'}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.300', color: 'grey.800' }}>
-                    Total Working Days
-                  </TableCell>
-                  <TableCell sx={{ color: 'grey.800' }}>
-                    {current.workingDays?.totalWorkingDays ?? '-'}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.300', color: 'grey.800' }}>
-                    Days Attended
-                  </TableCell>
-                  <TableCell sx={{ color: 'grey.800' }}>
-                    {current.workingDays?.daysAttended ?? '-'}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.300', color: 'grey.800' }}>
-                    Leaves Taken
-                  </TableCell>
-                  <TableCell sx={{ color: 'grey.800' }}>
-                    {current.workingDays?.leavesTaken ?? '0'}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.300', color: 'grey.800' }}>
-                    Balance Leaves
-                  </TableCell>
-                  <TableCell sx={{ color: 'grey.800' }}>
-                    {current.workingDays?.balanceLeaves ?? '0'}
-                  </TableCell>
-                </TableRow>
-                {(current.employee.bankAccount || current.employee.bankName) && (
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.300', color: 'grey.800' }}>
-                      Bank Account
-                    </TableCell>
-                    <TableCell sx={{ color: 'grey.800' }}>
-                      {current.employee.bankAccount || '-'}
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.300', color: 'grey.800' }}>
-                      Bank Name
-                    </TableCell>
-                    <TableCell sx={{ color: 'grey.800' }}>
-                      {current.employee.bankName || '-'}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-              </Table>
-            </Box>
-          </Box>
+          {/* Company Header */}
+          <CompanyHeader
+            company={current.company}
+            template={current.template}
+            month={current.month}
+          />
 
-          {/* Earnings and Deductions Section */}
-          <Box sx={{ mb: 5 }}>
-            <Typography variant="h5" sx={{
-              fontWeight: 600,
-              mb: 4,
-              color: 'grey.800',
-              textAlign: 'center',
-              fontSize: { xs: '1.3rem', md: '1.5rem' },
-              letterSpacing: 0.3
-            }}>
-              Salary Breakdown
-            </Typography>
-            <Box sx={{
-              background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-              border: '1px solid',
-              borderColor: 'grey.300',
-              borderRadius: 2,
-              overflow: 'hidden',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
-            }}>
-              <Table className="earnings-deductions" sx={{
-                '& .MuiTableCell-root': {
-                  py: 2.5,
-                  fontSize: '0.95rem',
-                  fontWeight: 400
-                }
-              }}>
-                <TableHead>
-                  <TableRow sx={{ bgcolor: 'grey.300' }}>
-                    <TableCell align="center" colSpan={2} sx={{
-                      fontWeight: 600,
-                      color: 'grey.800',
-                      fontSize: '1.1rem',
-                      py: 2.5,
-                      letterSpacing: 0.5
-                    }}>
-                      Earnings
-                    </TableCell>
-                    <TableCell align="center" colSpan={2} sx={{
-                      fontWeight: 600,
-                      color: 'grey.800',
-                      fontSize: '1.1rem',
-                      py: 2.5,
-                      letterSpacing: 0.5
-                    }}>
-                      Deductions
-                    </TableCell>
-                  </TableRow>
-                  <TableRow sx={{ bgcolor: 'grey.100' }}>
-                    <TableCell align="center" sx={{ fontWeight: 600, color: 'grey.700', fontSize: '0.9rem' }}>Particulars</TableCell>
-                    <TableCell align="center" sx={{ fontWeight: 600, color: 'grey.700', fontSize: '0.9rem' }}>Amount</TableCell>
-                    <TableCell align="center" sx={{ fontWeight: 600, color: 'grey.700', fontSize: '0.9rem' }}>Particulars</TableCell>
-                    <TableCell align="center" sx={{ fontWeight: 600, color: 'grey.700', fontSize: '0.9rem' }}>Amount</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {tableRows}
-                  <TableRow sx={{
-                    bgcolor: 'grey.200',
-                    '& .MuiTableCell-root': {
-                      color: 'grey.800',
-                      fontWeight: 600,
-                      fontSize: '1rem',
-                      py: 2.5
-                    }
-                  }}>
-                    <TableCell>Total Earnings</TableCell>
-                    <TableCell align="right">{formattedValues.totalIncome}</TableCell>
-                    <TableCell>Total Deductions</TableCell>
-                    <TableCell align="right">{formattedValues.totalDeductions}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </Box>
-          </Box>
+          {/* Employee Information */}
+          <EmployeeInfoTable
+            employee={current.employee}
+            workingDays={current.workingDays}
+          />
 
-          {/* Net Salary Highlight */}
-          <Box sx={netSalaryStyles}>
-            <Typography variant="h6" sx={{
-              color: 'grey.800',
-              fontWeight: 500,
-              opacity: 0.9,
-              mb: 1.5,
-              fontSize: { xs: '1.1rem', md: '1.25rem' },
-              letterSpacing: 0.5
-            }}>
-              Net Salary
-            </Typography>
-            <Typography variant="h3" sx={{
-              color: 'grey.800',
-              fontWeight: 600,
-              fontSize: { xs: '2.5rem', md: '3.5rem' },
-              letterSpacing: 0.5,
-              lineHeight: 1.1
-            }}>
-              {formattedValues.netSalary}
-            </Typography>
-          </Box>
+          {/* Earnings and Deductions */}
+          <EarningsDeductionsTable
+            income={current.income || []}
+            deductions={current.deductions || []}
+            totalIncome={formattedValues.totalIncome}
+            totalDeductions={formattedValues.totalDeductions}
+            formatCurrency={fmt}
+          />
+
+          {/* Net Salary */}
+          <NetSalarySection netSalary={formattedValues.netSalary} />
 
           {/* Signature Section */}
           <Box sx={{
@@ -694,6 +279,8 @@ const PreviewPage: React.FC = React.memo(() => {
             </Typography>
           </Box>
         </div>
+
+        {/* Action Buttons */}
         <Box sx={{
           mt: 4,
           p: 3,

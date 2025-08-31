@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Container from '@mui/material/Container'
 import { Provider } from 'react-redux'
@@ -7,12 +7,15 @@ import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import theme from './theme/theme'
 import { store, persistor } from './store'
-import HomePage from './pages/HomePage'
-import FormPage from './pages/FormPage'
-import PreviewPage from './pages/PreviewPage'
-import EmployeesPage from './pages/EmployeesPage'
-import CreateEmployeePage from './pages/CreateEmployeePage'
 import ErrorBoundary from './components/ErrorBoundary'
+import LoadingSpinner from './components/LoadingSpinner'
+
+// Lazy load page components
+const HomePage = React.lazy(() => import('./pages/HomePage'))
+const FormPage = React.lazy(() => import('./pages/FormPage'))
+const PreviewPage = React.lazy(() => import('./pages/PreviewPage'))
+const EmployeesPage = React.lazy(() => import('./pages/EmployeesPage'))
+const CreateEmployeePage = React.lazy(() => import('./pages/CreateEmployeePage'))
 
 const App: React.FC = () => {
   return (
@@ -36,13 +39,15 @@ const App: React.FC = () => {
                     borderRadius: 2,
                   }}
                 >
-                  <Routes>
-                    <Route path="/" element={<ErrorBoundary><HomePage /></ErrorBoundary>} />
-                    <Route path="/form" element={<ErrorBoundary><FormPage /></ErrorBoundary>} />
-                    <Route path="/employees" element={<ErrorBoundary><EmployeesPage /></ErrorBoundary>} />
-                    <Route path="/employees/create" element={<ErrorBoundary><CreateEmployeePage /></ErrorBoundary>} />
-                    <Route path="/preview" element={<ErrorBoundary><PreviewPage /></ErrorBoundary>} />
-                  </Routes>
+                  <Suspense fallback={<LoadingSpinner message="Loading page..." />}>
+                    <Routes>
+                      <Route path="/" element={<ErrorBoundary><HomePage /></ErrorBoundary>} />
+                      <Route path="/form" element={<ErrorBoundary><FormPage /></ErrorBoundary>} />
+                      <Route path="/employees" element={<ErrorBoundary><EmployeesPage /></ErrorBoundary>} />
+                      <Route path="/employees/create" element={<ErrorBoundary><CreateEmployeePage /></ErrorBoundary>} />
+                      <Route path="/preview" element={<ErrorBoundary><PreviewPage /></ErrorBoundary>} />
+                    </Routes>
+                  </Suspense>
                 </Container>
               </BrowserRouter>
             </ErrorBoundary>
