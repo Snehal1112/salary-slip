@@ -252,19 +252,50 @@ const CompaniesPage: React.FC = () => {
 
       {/* Company Form - Only show when adding or editing */}
       {(showAddForm || editingId) && (
-        <Box sx={{ mb: 3 }}>
-          <CompanyForm
-            initial={initialCompany}
-            onSubmit={onSubmit}
-            onCancel={handleCancelForm}
-            submitLabel={editingId ? 'Update Company' : 'Add Company'}
-            showHeader={true}
-          />
-        </Box>
+        <Paper 
+          elevation={2} 
+          sx={{ 
+            mb: 3, 
+            borderRadius: 2, 
+            overflow: 'hidden',
+            border: '1px solid',
+            borderColor: 'primary.200'
+          }}
+        >
+          <Box sx={{ 
+            px: 3, 
+            py: 2, 
+            backgroundColor: 'primary.50', 
+            borderBottom: '1px solid', 
+            borderColor: 'divider'
+          }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main', mb: 0.5 }}>
+              {editingId ? 'Edit Company' : 'Add New Company'}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {editingId ? 'Update company information' : 'Fill out the form below to add a new company'}
+            </Typography>
+          </Box>
+          <Box sx={{ p: 2 }}>
+            <CompanyForm
+              initial={initialCompany}
+              onSubmit={onSubmit}
+              onCancel={handleCancelForm}
+              submitLabel={editingId ? 'Update Company' : 'Add Company'}
+              showHeader={false}
+            />
+          </Box>
+        </Paper>
       )}
 
       {/* Company List */}
-      <Paper sx={{ mt: 3 }}>
+      <Paper 
+        elevation={1} 
+        sx={{ 
+          borderRadius: 2,
+          mt: (showAddForm || editingId) ? 2 : 3
+        }}
+      >
         <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
           <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
             Companies ({companies.length})
