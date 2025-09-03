@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import {
   Container,
   Typography,
@@ -41,8 +41,6 @@ import {
 import PageBreadcrumbs from '../components/PageBreadcrumbs'
 import { useAppSelector, useAppDispatch } from '../store/hooks'
 import {
-  addCompany,
-  updateCompany,
   deleteCompany,
   setFilters,
   clearFilters,
@@ -54,8 +52,7 @@ import {
 } from '../features/companies/companiesSlice'
 import { setCompanyFromManagement } from '../features/salary/salarySlice'
 import { useNavigate } from 'react-router-dom'
-import type { Company, CompanyRequired } from '../types/shared'
-import CompanyForm from '../features/companies/CompanyFormSimple'
+import type { CompanyRequired } from '../types/shared'
 
 const CompaniesPage: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -68,8 +65,6 @@ const CompaniesPage: React.FC = () => {
   const error = useAppSelector(selectCompaniesError)
   const stats = useAppSelector(selectCompanyStats)
 
-  const [editingId, setEditingId] = useState<string | undefined>(undefined)
-  const [showAddForm, setShowAddForm] = useState<boolean>(false)
   const [confirmDelete, setConfirmDelete] = useState<{ open: boolean; id?: string }>({ open: false })
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
@@ -90,42 +85,13 @@ const CompaniesPage: React.FC = () => {
   }
 
   const handleAddCompany = () => {
-    setEditingId(undefined)
-    setShowAddForm(true)
+    navigate('/companies/create')
   }
 
-  const handleCancelForm = () => {
-    setEditingId(undefined)
-    setShowAddForm(false)
-  }
 
-  const onSubmit = (data: Company) => {
-    try {
-      // Convert Company to CompanyRequired by ensuring required fields
-      const companyData: CompanyRequired = {
-        ...data,
-        name: data.name,
-        addresses: data.addresses,
-        isActive: data.isActive,
-      }
-
-      if (editingId) {
-        dispatch(updateCompany({ ...companyData, id: editingId }))
-        setSnackbar({ open: true, message: 'Company updated successfully', severity: 'success' })
-      } else {
-        dispatch(addCompany(companyData))
-        setSnackbar({ open: true, message: 'Company added successfully', severity: 'success' })
-        setShowAddForm(false) // Hide form after successful addition
-      }
-      setEditingId(undefined)
-    } catch {
-      setSnackbar({ open: true, message: 'Error saving company', severity: 'error' })
-    }
-  }
 
   const onEdit = (company: CompanyRequired) => {
-    setEditingId(company.id)
-    setShowAddForm(true) // Show form when editing
+    navigate(`/companies/edit/${company.id}`)
   }
 
   const onUse = (company: CompanyRequired) => {
@@ -144,17 +110,12 @@ const CompaniesPage: React.FC = () => {
     setConfirmDelete({ open: false })
   }
 
-  const initialCompany = useMemo(() =>
-    editingId ? companies.find(c => c.id === editingId) : undefined,
-    [editingId, companies]
-  )
-
   const hasFilters = filters.search || filters.isActive !== 'all'
 
   const formatAddress = (addresses: { city?: string; state?: string; isPrimary?: boolean }[]) => {
     const primary = addresses.find(addr => addr.isPrimary) || addresses[0]
     if (!primary) return '-'
-    
+
     return `${primary.city}, ${primary.state}`
   }
 
@@ -250,50 +211,12 @@ const CompaniesPage: React.FC = () => {
         </Alert>
       )}
 
-      {/* Company Form - Only show when adding or editing */}
-      {(showAddForm || editingId) && (
-        <Paper 
-          elevation={2} 
-          sx={{ 
-            mb: 3, 
-            borderRadius: 2, 
-            overflow: 'hidden',
-            border: '1px solid',
-            borderColor: 'primary.200'
-          }}
-        >
-          <Box sx={{ 
-            px: 3, 
-            py: 2, 
-            backgroundColor: 'primary.50', 
-            borderBottom: '1px solid', 
-            borderColor: 'divider'
-          }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main', mb: 0.5 }}>
-              {editingId ? 'Edit Company' : 'Add New Company'}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {editingId ? 'Update company information' : 'Fill out the form below to add a new company'}
-            </Typography>
-          </Box>
-          <Box sx={{ p: 2 }}>
-            <CompanyForm
-              initial={initialCompany}
-              onSubmit={onSubmit}
-              onCancel={handleCancelForm}
-              submitLabel={editingId ? 'Update Company' : 'Add Company'}
-              showHeader={false}
-            />
-          </Box>
-        </Paper>
-      )}
-
       {/* Company List */}
-      <Paper 
-        elevation={1} 
-        sx={{ 
+      <Paper
+        elevation={1}
+        sx={{
           borderRadius: 2,
-          mt: (showAddForm || editingId) ? 2 : 3
+          mt: 3
         }}
       >
         <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>

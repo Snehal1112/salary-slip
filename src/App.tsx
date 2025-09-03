@@ -17,6 +17,8 @@ const PreviewPage = React.lazy(() => import('./pages/PreviewPage'))
 const EmployeesPage = React.lazy(() => import('./pages/EmployeesPage'))
 const CreateEmployeePage = React.lazy(() => import('./pages/CreateEmployeePage'))
 const CompaniesPage = React.lazy(() => import('./pages/CompaniesPage'))
+const CreateCompanyPage = React.lazy(() => import('./pages/CreateCompanyPage'))
+const EditCompanyPage = React.lazy(() => import('./pages/EditCompanyPage'))
 
 const App: React.FC = () => {
   return (
@@ -47,6 +49,8 @@ const App: React.FC = () => {
                       <Route path="/employees" element={<ErrorBoundary><EmployeesPage /></ErrorBoundary>} />
                       <Route path="/employees/create" element={<ErrorBoundary><CreateEmployeePage /></ErrorBoundary>} />
                       <Route path="/companies" element={<ErrorBoundary><CompaniesPage /></ErrorBoundary>} />
+                      <Route path="/companies/create" element={<ErrorBoundary><CreateCompanyPage /></ErrorBoundary>} />
+                      <Route path="/companies/edit/:id" element={<ErrorBoundary><EditCompanyPage /></ErrorBoundary>} />
                       <Route path="/preview" element={<ErrorBoundary><PreviewPage /></ErrorBoundary>} />
                     </Routes>
                   </Suspense>

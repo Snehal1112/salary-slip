@@ -45,7 +45,7 @@ const CompanyFormSimple: React.FC<CompanyFormProps> = ({
   onSubmit,
   onCancel,
   submitLabel = 'Save Company',
-  showHeader = true,
+  showHeader = false,
 }) => {
   const formRef = useRef<HTMLFormElement>(null);
   const errorAnnouncementRef = useRef<HTMLDivElement>(null);
@@ -287,61 +287,154 @@ const CompanyFormSimple: React.FC<CompanyFormProps> = ({
         sx={{
           maxWidth: 1200,
           mx: 'auto',
-          p: { xs: 2, sm: 0 },
-          minHeight: '100vh'
+          p: { xs: 2, sm: 1 },
         }}
         role="main"
         aria-label="Company information form"
       >
         {showHeader && (
-          <Paper elevation={1} sx={{ p: 3, mb: 3, borderRadius: 2 }} component="header" role="banner">
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <BusinessIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-              <Box>
-                <Typography variant="h4" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                  {initial ? 'Edit Company Information' : 'Add Company Information'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {initial ? 'Update your company details' : 'Set up your company profile'}
-                </Typography>
-              </Box>
-            </Box>
+          <Paper
+            elevation={2}
+            sx={{
+              mb: 4,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            {/* Main Header */}
+            <Box sx={{ p: { xs: 3, sm: 4 }, pb: 0 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <Box
+                    sx={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: 2,
+                      background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)'
+                    }}
+                  >
+                    <BusinessIcon sx={{ fontSize: 32 }} />
+                  </Box>
+                  <Box>
+                    <Typography
+                      variant="h3"
+                      component="h1"
+                      sx={{
+                        fontWeight: 700,
+                        mb: 1,
+                        fontSize: { xs: '1.75rem', sm: '2.125rem' },
+                        color: 'text.primary',
+                        letterSpacing: '-0.02em'
+                      }}
+                    >
+                      {initial ? 'Edit Company Information' : 'Add Company Information'}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      color="text.secondary"
+                      sx={{
+                        fontWeight: 400,
+                        fontSize: '1.125rem',
+                        lineHeight: 1.4
+                      }}
+                    >
+                      {initial ? 'Update your company details' : 'Set up your company profile'}
+                    </Typography>
+                  </Box>
+                </Box>
 
-            {/* Progress Section */}
-            <Box sx={{ mt: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Form Completion
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {formProgress}%
-                </Typography>
+                <Chip
+                  label={`${formProgress}% Complete`}
+                  color="primary"
+                  variant="filled"
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    height: 36,
+                    borderRadius: 2,
+                    background: formProgress === 100
+                      ? 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)'
+                      : 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                    color: 'white',
+                    '& .MuiChip-label': {
+                      px: 2
+                    }
+                  }}
+                />
               </Box>
-              <LinearProgress
-                variant="determinate"
-                value={formProgress}
-                sx={{
-                  height: 6,
-                  borderRadius: 3,
-                  backgroundColor: 'grey.200',
-                  '& .MuiLinearProgress-bar': {
-                    borderRadius: 3
-                  }
-                }}
-                aria-label={`Form completion progress: ${formProgress} percent`}
-              />
 
-              <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {['basic', 'address', 'registration', 'other'].map((section) => (
-                  <Chip
-                    key={section}
-                    label={section.charAt(0).toUpperCase() + section.slice(1)}
-                    icon={completedSections.includes(section) ? <CheckCircleIcon /> : undefined}
-                    variant={completedSections.includes(section) ? 'filled' : 'outlined'}
-                    color={completedSections.includes(section) ? 'success' : 'default'}
-                    size="small"
-                  />
-                ))}
+              {/* Progress Section */}
+              <Box sx={{ mb: 0 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 600,
+                      color: 'text.primary',
+                      fontSize: '1rem'
+                    }}
+                  >
+                    Form Completion
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      fontWeight: 700,
+                      color: 'primary.main',
+                      fontSize: '1rem'
+                    }}
+                  >
+                    {formProgress}%
+                  </Typography>
+                </Box>
+
+                <LinearProgress
+                  variant="determinate"
+                  value={formProgress}
+                  sx={{
+                    height: 10,
+                    borderRadius: 5,
+                    backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                    mb: 3,
+                    '& .MuiLinearProgress-bar': {
+                      borderRadius: 5,
+                      background: formProgress === 100
+                        ? 'linear-gradient(90deg, #4caf50 0%, #66bb6a 100%)'
+                        : 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)'
+                    }
+                  }}
+                  aria-label={`Form completion progress: ${formProgress} percent`}
+                />
+
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, pb: 3 }}>
+                  {['basic', 'address', 'registration', 'other'].map((section) => (
+                    <Chip
+                      key={section}
+                      label={section.charAt(0).toUpperCase() + section.slice(1)}
+                      icon={completedSections.includes(section) ? <CheckCircleIcon /> : undefined}
+                      color={completedSections.includes(section) ? 'success' : 'default'}
+                      variant={completedSections.includes(section) ? 'filled' : 'outlined'}
+                      size="small"
+                      sx={{
+                        fontWeight: 500,
+                        ...(completedSections.includes(section) && {
+                          backgroundColor: 'success.main',
+                          color: 'white',
+                          '& .MuiChip-icon': {
+                            color: 'white'
+                          }
+                        })
+                      }}
+                    />
+                  ))}
+                </Box>
               </Box>
             </Box>
           </Paper>
@@ -740,7 +833,7 @@ const CompanyFormSimple: React.FC<CompanyFormProps> = ({
           )}
 
           {/* Actions */}
-          <Paper variant="outlined" sx={{ p: 3, mt: 3, borderRadius: 2 }} component="section" aria-label="Form actions">
+          <Paper variant="outlined" sx={{ p: 3, mt: 4, borderRadius: 2 }} component="section" aria-label="Form actions">
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', sm: 'center' }, gap: 3 }}>
               <Box>
                 <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
