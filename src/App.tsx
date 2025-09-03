@@ -50,7 +50,7 @@ const App: React.FC = () => {
                       <Route path="/employees/create" element={<ErrorBoundary><CreateEmployeePage /></ErrorBoundary>} />
                       <Route path="/companies" element={<ErrorBoundary><CompaniesPage /></ErrorBoundary>} />
                       <Route path="/companies/create" element={<ErrorBoundary><CreateCompanyPage /></ErrorBoundary>} />
-                      <Route path="/companies/edit/:id" element={<ErrorBoundary><EditCompanyPage /></ErrorBoundary>} />
+                      <Route path="/companies/:id" element={<ErrorBoundary><EditCompanyPage /></ErrorBoundary>} />
                       <Route path="/preview" element={<ErrorBoundary><PreviewPage /></ErrorBoundary>} />
                     </Routes>
                   </Suspense>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Container } from '@mui/material'
 import PageBreadcrumbs from '../components/PageBreadcrumbs'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -6,6 +6,7 @@ import CompanyForm from '../features/companies/CompanyFormSimple'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { updateCompany, selectAllCompanies } from '../features/companies/companiesSlice'
 import type { Company, CompanyRequired } from '../types/shared'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 const EditCompanyPage: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -45,14 +46,31 @@ const EditCompanyPage: React.FC = () => {
     navigate('/companies')
   }
 
+  useEffect(() => {
+    if (!company && id) {
+      // Company not found, redirect to companies page
+      navigate('/companies')
+    }
+  }, [company, id, navigate])
+
   if (!company) {
-    navigate('/companies')
-    return null
+    return (
+      <Container sx={{ py: 3 }}>
+        <PageBreadcrumbs />
+        <LoadingSpinner message="Loading company details..." />
+      </Container>
+    )
   }
+
+  const breadcrumbItems = [
+    { label: 'Home', to: '/' },
+    { label: 'Companies', to: '/companies' },
+    { label: company.name }
+  ]
 
   return (
     <Container sx={{ py: 3 }}>
-      <PageBreadcrumbs />
+      <PageBreadcrumbs items={breadcrumbItems} />
       <CompanyForm
         initial={company}
         onSubmit={handleSubmit}

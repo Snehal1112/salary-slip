@@ -91,7 +91,7 @@ const CompaniesPage: React.FC = () => {
 
 
   const onEdit = (company: CompanyRequired) => {
-    navigate(`/companies/edit/${company.id}`)
+    navigate(`/companies/${company.id}`)
   }
 
   const onUse = (company: CompanyRequired) => {
