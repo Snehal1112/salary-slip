@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { combineReducers } from "redux";
 import salaryReducer from "../features/salary/salarySlice";
 import employeesReducer from "../features/employees/employeesSlice";
+import companiesReducer from "../features/companies/companiesSlice";
 import {
   persistStore,
   persistReducer,
@@ -17,6 +18,7 @@ import storage from "redux-persist/lib/storage";
 const rootReducer = combineReducers({
   salary: salaryReducer,
   employees: employeesReducer,
+  companies: companiesReducer,
 });
 
 const persistConfig = {

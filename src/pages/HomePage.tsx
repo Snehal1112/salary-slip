@@ -25,12 +25,13 @@ import {
   Receipt as ReceiptIcon,
   Visibility as VisibilityIcon,
   Delete as DeleteIcon,
-  FileDownload as FileDownloadIcon
+  Business as BusinessIcon
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { loadSlip, deleteSlip } from '../features/salary/salarySlice';
 import { selectEmployeeStats } from '../features/employees/employeesSlice';
+import { selectCompanyStats } from '../features/companies/companiesSlice';
 import { formatCurrency } from '../utils/currency';
 
 const HomePage: React.FC = () => {
@@ -40,6 +41,7 @@ const HomePage: React.FC = () => {
   // Get saved slips and employee stats
   const savedSlips = useAppSelector(state => state.salary.slips);
   const employeeStats = useAppSelector(selectEmployeeStats);
+  const companyStats = useAppSelector(selectCompanyStats);
 
   const handleViewSlip = (slipId: string) => {
     dispatch(loadSlip(slipId));
@@ -98,12 +100,12 @@ const HomePage: React.FC = () => {
         <Grid size={{ xs: 12, sm: 4 }}>
           <Card elevation={2} sx={{ textAlign: 'center', py: 2 }}>
             <CardContent>
-              <FileDownloadIcon sx={{ fontSize: 48, color: 'info.main', mb: 1 }} />
+              <BusinessIcon sx={{ fontSize: 48, color: 'info.main', mb: 1 }} />
               <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-                {Object.keys(employeeStats.departmentCounts).length}
+                {companyStats.totalCompanies}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Departments
+                Companies
               </Typography>
             </CardContent>
           </Card>
@@ -112,7 +114,7 @@ const HomePage: React.FC = () => {
 
       {/* Main Actions */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flexGrow: 1, textAlign: 'center', py: 4 }}>
               <AddIcon sx={{ fontSize: 64, color: 'primary.main', mb: 2 }} />
@@ -139,7 +141,7 @@ const HomePage: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flexGrow: 1, textAlign: 'center', py: 4 }}>
               <PeopleIcon sx={{ fontSize: 64, color: 'secondary.main', mb: 2 }} />
@@ -160,6 +162,32 @@ const HomePage: React.FC = () => {
                 sx={{ px: 4 }}
               >
                 View Employees
+              </Button>
+            </CardActions>
+          </Card>
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Card elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flexGrow: 1, textAlign: 'center', py: 4 }}>
+              <BusinessIcon sx={{ fontSize: 64, color: 'info.main', mb: 2 }} />
+              <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
+                Manage Companies
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                Add, edit company information, addresses, and registration details for salary slip generation.
+              </Typography>
+            </CardContent>
+            <CardActions sx={{ justifyContent: 'center', pb: 3 }}>
+              <Button
+                component={RouterLink}
+                to="/companies"
+                variant="outlined"
+                size="large"
+                startIcon={<BusinessIcon />}
+                sx={{ px: 4 }}
+              >
+                View Companies
               </Button>
             </CardActions>
           </Card>

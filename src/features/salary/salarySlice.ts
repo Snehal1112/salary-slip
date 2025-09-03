@@ -1,6 +1,8 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { LineItem, SalaryState, SlipData } from "./types";
+import { convertCompanyToSalaryCompany } from "./types";
+import type { Company as CompanyManagement } from "../../types/shared";
 
 const defaultIncome: LineItem[] = [
   { particular: "Basic Salary", amount: 0 },
@@ -178,6 +180,9 @@ export const salarySlice = createSlice({
     ) {
       state.current.template = action.payload;
     },
+    setCompanyFromManagement(state, action: PayloadAction<CompanyManagement>) {
+      state.current.company = convertCompanyToSalaryCompany(action.payload);
+    },
     exportState(state) {
       return state;
     },
@@ -205,6 +210,7 @@ export const {
   deleteSlip,
   resetCurrent,
   setTemplate,
+  setCompanyFromManagement,
   exportState,
   importState,
 } = salarySlice.actions;
