@@ -740,7 +740,7 @@ const CompanyFormSimple: React.FC<CompanyFormProps> = ({
           )}
 
           {/* Actions */}
-          <Paper variant="outlined" sx={{ p: 3, mt: 4, borderRadius: 2 }} component="section" aria-label="Form actions">
+          <Paper variant="outlined" sx={{ p: 3, mt: 3, borderRadius: 2 }} component="section" aria-label="Form actions">
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', sm: 'center' }, gap: 3 }}>
               <Box>
                 <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
